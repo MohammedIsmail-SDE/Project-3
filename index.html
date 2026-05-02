@@ -1,0 +1,650 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>MarketEdge — Trade Smarter. Invest Better.</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #060d10;
+    --bg2: #0b1418;
+    --bg3: #0f1d22;
+    --green: #00e676;
+    --green-dim: #00c85a;
+    --green-glow: rgba(0,230,118,0.15);
+    --green-glow2: rgba(0,230,118,0.07);
+    --text: #e8f0f2;
+    --muted: #7a9aa8;
+    --border: rgba(0,230,118,0.12);
+    --border2: rgba(255,255,255,0.06);
+    --font-head: 'Syne', sans-serif;
+    --font-body: 'DM Sans', sans-serif;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: var(--font-body);
+    background: var(--bg);
+    color: var(--text);
+    overflow-x: hidden;
+    min-height: 100vh;
+  }
+
+  /* ── NOISE TEXTURE OVERLAY ── */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    opacity: 0.4;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* ── NAVBAR ── */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 3rem;
+    height: 64px;
+    background: rgba(6,13,16,0.85);
+    backdrop-filter: blur(16px);
+    border-bottom: 0.5px solid var(--border2);
+  }
+
+  .logo {
+    display: flex; align-items: center; gap: 10px;
+    font-family: var(--font-head); font-weight: 700; font-size: 18px;
+    color: var(--text); text-decoration: none;
+  }
+
+  .logo-icon {
+    width: 32px; height: 32px;
+    background: var(--green-glow);
+    border: 1px solid var(--green);
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+  }
+
+  .logo-icon svg { width: 18px; height: 18px; }
+
+  .nav-links {
+    display: flex; gap: 2rem; list-style: none;
+  }
+
+  .nav-links a {
+    font-size: 14px; font-weight: 400;
+    color: var(--muted); text-decoration: none;
+    transition: color .2s;
+    position: relative;
+  }
+
+  .nav-links a.active { color: var(--green); }
+  .nav-links a.active::after {
+    content: '';
+    position: absolute; bottom: -4px; left: 0; right: 0;
+    height: 2px; background: var(--green);
+    border-radius: 2px;
+  }
+
+  .nav-links a:hover { color: var(--text); }
+
+  .btn-cta {
+    padding: 9px 22px;
+    border: 1px solid var(--text);
+    border-radius: 50px;
+    background: transparent;
+    color: var(--text);
+    font-family: var(--font-body); font-size: 14px; font-weight: 500;
+    cursor: pointer; transition: all .2s;
+  }
+  .btn-cta:hover { background: var(--text); color: var(--bg); }
+
+  /* ── HERO ── */
+  .hero {
+    position: relative; z-index: 1;
+    min-height: 100vh;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    align-items: center;
+    padding: 100px 3rem 0;
+    overflow: hidden;
+  }
+
+  /* radial glow behind content */
+  .hero::after {
+    content: '';
+    position: absolute;
+    top: 10%; left: -10%;
+    width: 60%; height: 80%;
+    background: radial-gradient(ellipse at center, rgba(0,230,118,0.06) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .hero-left { position: relative; z-index: 2; padding-bottom: 3rem; }
+
+  .hero-tag {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 5px 14px;
+    border: 0.5px solid var(--border);
+    border-radius: 50px;
+    background: var(--green-glow2);
+    font-size: 12px; color: var(--green); letter-spacing: 0.08em;
+    margin-bottom: 2rem;
+    animation: fadeUp 0.6s ease both;
+  }
+
+  .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--green); animation: pulse 2s infinite; }
+
+  @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.5;transform:scale(0.8)} }
+
+  h1 {
+    font-family: var(--font-head);
+    font-size: clamp(42px, 5vw, 68px);
+    font-weight: 800;
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+    margin-bottom: 1.5rem;
+    animation: fadeUp 0.6s ease 0.1s both;
+  }
+
+  h1 span { color: var(--green); display: block; }
+
+  .hero-sub {
+    font-size: 16px; line-height: 1.7;
+    color: var(--muted); max-width: 420px;
+    margin-bottom: 2.5rem;
+    animation: fadeUp 0.6s ease 0.2s both;
+  }
+
+  .hero-btns {
+    display: flex; gap: 1rem; align-items: center;
+    animation: fadeUp 0.6s ease 0.3s both;
+  }
+
+  .btn-primary {
+    display: flex; align-items: center; gap: 8px;
+    padding: 14px 28px;
+    background: var(--green);
+    color: #060d10;
+    border: none; border-radius: 8px;
+    font-family: var(--font-body); font-size: 15px; font-weight: 500;
+    cursor: pointer; transition: all .2s;
+  }
+  .btn-primary:hover { background: var(--green-dim); transform: translateY(-1px); }
+
+  .btn-secondary {
+    padding: 14px 28px;
+    background: transparent;
+    color: var(--text);
+    border: 0.5px solid var(--border2);
+    border-radius: 8px;
+    font-family: var(--font-body); font-size: 15px; font-weight: 400;
+    cursor: pointer; transition: all .2s;
+  }
+  .btn-secondary:hover { border-color: var(--muted); }
+
+  /* ── TICKER CARDS ── */
+  .ticker-row {
+    display: flex; gap: 1rem;
+    margin-top: 3rem;
+    animation: fadeUp 0.6s ease 0.45s both;
+  }
+
+  .ticker-card {
+    background: var(--bg2);
+    border: 0.5px solid var(--border);
+    border-radius: 12px;
+    padding: 14px 18px;
+    min-width: 170px;
+    position: relative; overflow: hidden;
+    transition: border-color .2s, transform .2s;
+  }
+  .ticker-card:hover { border-color: var(--green); transform: translateY(-2px); }
+
+  .ticker-name {
+    font-size: 11px; letter-spacing: 0.1em;
+    color: var(--muted); margin-bottom: 6px;
+  }
+
+  .ticker-row-inner { display: flex; align-items: baseline; gap: 10px; margin-bottom: 10px; }
+
+  .ticker-price {
+    font-family: var(--font-head); font-size: 18px; font-weight: 700;
+    color: var(--text);
+  }
+
+  .ticker-change {
+    font-size: 12px; font-weight: 500; color: var(--green);
+    background: rgba(0,230,118,0.1);
+    padding: 2px 7px; border-radius: 4px;
+  }
+
+  /* mini sparkline SVG */
+  .sparkline { width: 100%; height: 32px; }
+
+  /* ── HERO RIGHT (chart visual) ── */
+  .hero-right {
+    position: relative; z-index: 2;
+    display: flex; align-items: center; justify-content: center;
+    height: 100%;
+  }
+
+  .chart-visual {
+    position: relative; width: 100%;
+    display: flex; align-items: center; justify-content: center;
+  }
+
+  /* Big background number grid */
+  .grid-bg {
+    position: absolute; inset: 0;
+    display: grid; grid-template-columns: repeat(8,1fr); grid-template-rows: repeat(10,1fr);
+    opacity: 0.07; pointer-events: none;
+    font-family: var(--font-head); font-size: 11px; color: var(--green);
+  }
+
+  .grid-bg span { display: flex; align-items: center; justify-content: center; }
+
+  /* Candlestick chart SVG */
+  .candle-chart {
+    width: 100%; max-width: 520px;
+    filter: drop-shadow(0 0 40px rgba(0,230,118,0.15));
+    animation: fadeIn 1s ease 0.5s both;
+  }
+
+  /* Bull silhouette using CSS */
+  .bull-wrap {
+    position: absolute;
+    bottom: 0; right: 0;
+    width: 55%; opacity: 0.18;
+    pointer-events: none;
+    animation: fadeIn 1.2s ease 0.8s both;
+  }
+
+  /* Arrow up indicator */
+  .arrow-up-big {
+    position: absolute;
+    top: 60px; right: 20px;
+    animation: arrowFloat 3s ease-in-out infinite;
+  }
+
+  @keyframes arrowFloat { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-10px)} }
+
+  /* ── FEATURES SECTION ── */
+  .features {
+    position: relative; z-index: 1;
+    display: grid; grid-template-columns: repeat(4,1fr);
+    gap: 1px;
+    background: var(--border2);
+    border-top: 0.5px solid var(--border2);
+    border-bottom: 0.5px solid var(--border2);
+  }
+
+  .feature {
+    background: var(--bg);
+    padding: 2.5rem 2rem;
+    display: flex; flex-direction: column; gap: 12px;
+    transition: background .2s;
+  }
+  .feature:hover { background: var(--bg3); }
+
+  .feature-icon {
+    width: 44px; height: 44px;
+    background: var(--green-glow);
+    border: 1px solid rgba(0,230,118,0.25);
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+  }
+
+  .feature-icon svg { width: 20px; height: 20px; stroke: var(--green); }
+
+  .feature h3 {
+    font-family: var(--font-head); font-size: 15px; font-weight: 600;
+    color: var(--text);
+  }
+
+  .feature p { font-size: 13px; line-height: 1.6; color: var(--muted); }
+
+  /* ── ANIMATIONS ── */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes fadeIn {
+    from { opacity: 0; } to { opacity: 1; }
+  }
+
+  /* ── TICKER TAPE ── */
+  .ticker-tape {
+    background: var(--bg3);
+    border-top: 0.5px solid var(--border2);
+    border-bottom: 0.5px solid var(--border2);
+    overflow: hidden; height: 36px;
+    display: flex; align-items: center;
+    position: relative; z-index: 1;
+  }
+
+  .tape-track {
+    display: flex; gap: 3rem; white-space: nowrap;
+    animation: scroll 30s linear infinite;
+    font-size: 12px;
+  }
+
+  .tape-item { display: flex; align-items: center; gap: 6px; }
+  .tape-name { color: var(--muted); letter-spacing: 0.05em; }
+  .tape-val { color: var(--text); font-weight: 500; }
+  .tape-up { color: var(--green); }
+  .tape-down { color: #ff5252; }
+
+  @keyframes scroll { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+
+  /* responsive */
+  @media (max-width: 900px) {
+    .hero { grid-template-columns: 1fr; padding-top: 80px; }
+    .hero-right { display: none; }
+    .features { grid-template-columns: repeat(2,1fr); }
+    nav { padding: 0 1.5rem; }
+    .hero { padding: 80px 1.5rem 0; }
+  }
+  @media (max-width: 560px) {
+    .features { grid-template-columns: 1fr; }
+    .ticker-row { flex-direction: column; }
+  }
+</style>
+</head>
+<body>
+
+<!-- TICKER TAPE -->
+<div class="ticker-tape">
+  <div class="tape-track" id="tape"></div>
+</div>
+
+<!-- NAVBAR -->
+<nav>
+  <a href="#" class="logo">
+    <div class="logo-icon">
+      <svg viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <polyline points="1,14 5,8 9,11 13,4 17,6" stroke="#00e676" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+      </svg>
+    </div>
+    MarketEdge
+  </a>
+  <ul class="nav-links">
+    <li><a href="#" class="active">Home</a></li>
+    <li><a href="#">Markets</a></li>
+    <li><a href="#">Insights</a></li>
+    <li><a href="#">Tools</a></li>
+    <li><a href="#">About</a></li>
+  </ul>
+  <button class="btn-cta">Get Started</button>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-left">
+    <div class="hero-tag">
+      <span class="dot"></span>
+      Live market data — updated every second
+    </div>
+
+    <h1>Trade Smarter.<span>Invest Better.</span></h1>
+
+    <p class="hero-sub">Real-time market data, powerful analytics, and insights that help you stay ahead of the market.</p>
+
+    <div class="hero-btns">
+      <button class="btn-primary">
+        Get Started
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+          <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+      <button class="btn-secondary">Explore Markets</button>
+    </div>
+
+    <!-- TICKER CARDS -->
+    <div class="ticker-row">
+      <div class="ticker-card">
+        <div class="ticker-name">NIFTY 50</div>
+        <div class="ticker-row-inner">
+          <span class="ticker-price" id="nifty-price">24,750.10</span>
+          <span class="ticker-change" id="nifty-change">+1.35%</span>
+        </div>
+        <svg class="sparkline" viewBox="0 0 140 32" preserveAspectRatio="none">
+          <polyline points="0,28 20,22 35,25 55,14 70,18 90,8 110,12 130,4 140,6"
+            fill="none" stroke="#00e676" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <polygon points="0,28 20,22 35,25 55,14 70,18 90,8 110,12 130,4 140,6 140,32 0,32"
+            fill="rgba(0,230,118,0.08)"/>
+        </svg>
+      </div>
+
+      <div class="ticker-card">
+        <div class="ticker-name">SENSEX</div>
+        <div class="ticker-row-inner">
+          <span class="ticker-price" id="sensex-price">81,317.25</span>
+          <span class="ticker-change" id="sensex-change">+1.21%</span>
+        </div>
+        <svg class="sparkline" viewBox="0 0 140 32" preserveAspectRatio="none">
+          <polyline points="0,26 18,20 32,23 50,15 68,19 85,10 105,13 122,6 140,8"
+            fill="none" stroke="#00e676" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <polygon points="0,26 18,20 32,23 50,15 68,19 85,10 105,13 122,6 140,8 140,32 0,32"
+            fill="rgba(0,230,118,0.08)"/>
+        </svg>
+      </div>
+
+      <div class="ticker-card">
+        <div class="ticker-name">NASDAQ</div>
+        <div class="ticker-row-inner">
+          <span class="ticker-price" id="nasdaq-price">16,920.79</span>
+          <span class="ticker-change" id="nasdaq-change">+1.45%</span>
+        </div>
+        <svg class="sparkline" viewBox="0 0 140 32" preserveAspectRatio="none">
+          <polyline points="0,30 15,24 30,26 48,16 65,20 82,11 100,14 118,5 140,7"
+            fill="none" stroke="#00e676" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <polygon points="0,30 15,24 30,26 48,16 65,20 82,11 100,14 118,5 140,7 140,32 0,32"
+            fill="rgba(0,230,118,0.08)"/>
+        </svg>
+      </div>
+    </div>
+  </div>
+
+  <!-- HERO RIGHT — candlestick chart -->
+  <div class="hero-right">
+    <div class="chart-visual">
+      <!-- Grid numbers bg -->
+      <div class="grid-bg" id="grid-bg"></div>
+
+      <!-- Arrow up -->
+      <div class="arrow-up-big">
+        <svg width="60" height="60" viewBox="0 0 60 60" fill="none">
+          <line x1="30" y1="55" x2="30" y2="8" stroke="#00e676" stroke-width="3" stroke-linecap="round"/>
+          <polyline points="12,26 30,8 48,26" stroke="#00e676" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+        </svg>
+      </div>
+
+      <!-- Candlestick SVG chart -->
+      <svg class="candle-chart" viewBox="0 0 480 360" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <!-- Grid lines -->
+        <line x1="40" y1="300" x2="460" y2="300" stroke="rgba(0,230,118,0.1)" stroke-width="0.5"/>
+        <line x1="40" y1="240" x2="460" y2="240" stroke="rgba(0,230,118,0.1)" stroke-width="0.5"/>
+        <line x1="40" y1="180" x2="460" y2="180" stroke="rgba(0,230,118,0.1)" stroke-width="0.5"/>
+        <line x1="40" y1="120" x2="460" y2="120" stroke="rgba(0,230,118,0.1)" stroke-width="0.5"/>
+        <line x1="40" y1="60"  x2="460" y2="60"  stroke="rgba(0,230,118,0.1)" stroke-width="0.5"/>
+
+        <!-- Y-axis labels -->
+        <text x="30" y="304" fill="#7a9aa8" font-size="9" text-anchor="end" font-family="DM Sans">24,400</text>
+        <text x="30" y="244" fill="#7a9aa8" font-size="9" text-anchor="end" font-family="DM Sans">24,550</text>
+        <text x="30" y="184" fill="#7a9aa8" font-size="9" text-anchor="end" font-family="DM Sans">24,650</text>
+        <text x="30" y="124" fill="#7a9aa8" font-size="9" text-anchor="end" font-family="DM Sans">24,720</text>
+        <text x="30" y="64"  fill="#7a9aa8" font-size="9" text-anchor="end" font-family="DM Sans">24,800</text>
+
+        <!-- Candles (green = bullish, red = bearish) -->
+        <!-- Candle 1 -->
+        <line x1="68" y1="270" x2="68" y2="290" stroke="#00e676" stroke-width="1.2"/>
+        <rect x="62" y="245" width="12" height="25" fill="#00e676" rx="1"/>
+
+        <!-- Candle 2 -->
+        <line x1="98" y1="255" x2="98" y2="280" stroke="#ff5252" stroke-width="1.2"/>
+        <rect x="92" y="258" width="12" height="22" fill="#ff5252" rx="1"/>
+
+        <!-- Candle 3 -->
+        <line x1="128" y1="230" x2="128" y2="260" stroke="#00e676" stroke-width="1.2"/>
+        <rect x="122" y="232" width="12" height="28" fill="#00e676" rx="1"/>
+
+        <!-- Candle 4 -->
+        <line x1="158" y1="225" x2="158" y2="248" stroke="#00e676" stroke-width="1.2"/>
+        <rect x="152" y="210" width="12" height="38" fill="#00e676" rx="1"/>
+
+        <!-- Candle 5 -->
+        <line x1="188" y1="200" x2="188" y2="230" stroke="#ff5252" stroke-width="1.2"/>
+        <rect x="182" y="208" width="12" height="22" fill="#ff5252" rx="1"/>
+
+        <!-- Candle 6 -->
+        <line x1="218" y1="180" x2="218" y2="210" stroke="#00e676" stroke-width="1.2"/>
+        <rect x="212" y="168" width="12" height="42" fill="#00e676" rx="1"/>
+
+        <!-- Candle 7 -->
+        <line x1="248" y1="160" x2="248" y2="185" stroke="#00e676" stroke-width="1.2"/>
+        <rect x="242" y="148" width="12" height="37" fill="#00e676" rx="1"/>
+
+        <!-- Candle 8 -->
+        <line x1="278" y1="148" x2="278" y2="172" stroke="#ff5252" stroke-width="1.2"/>
+        <rect x="272" y="152" width="12" height="20" fill="#ff5252" rx="1"/>
+
+        <!-- Candle 9 -->
+        <line x1="308" y1="128" x2="308" y2="158" stroke="#00e676" stroke-width="1.2"/>
+        <rect x="302" y="115" width="12" height="43" fill="#00e676" rx="1"/>
+
+        <!-- Candle 10 -->
+        <line x1="338" y1="105" x2="338" y2="130" stroke="#00e676" stroke-width="1.2"/>
+        <rect x="332" y="95" width="12" height="35" fill="#00e676" rx="1"/>
+
+        <!-- Candle 11 -->
+        <line x1="368" y1="95" x2="368" y2="118" stroke="#ff5252" stroke-width="1.2"/>
+        <rect x="362" y="98" width="12" height="20" fill="#ff5252" rx="1"/>
+
+        <!-- Candle 12 -->
+        <line x1="398" y1="72" x2="398" y2="100" stroke="#00e676" stroke-width="1.2"/>
+        <rect x="392" y="62" width="12" height="38" fill="#00e676" rx="1"/>
+
+        <!-- Candle 13 (latest, tall) -->
+        <line x1="428" y1="55" x2="428" y2="82" stroke="#00e676" stroke-width="1.2"/>
+        <rect x="422" y="46" width="12" height="36" fill="#00e676" rx="1"/>
+
+        <!-- Moving average line -->
+        <polyline
+          points="62,268 92,272 122,258 152,235 182,218 212,192 242,172 272,162 302,140 332,118 362,110 392,85 422,68"
+          fill="none" stroke="#00b8d4" stroke-width="1.5" stroke-dasharray="4 3" opacity="0.7"/>
+
+        <!-- Price label callout -->
+        <rect x="350" y="28" width="110" height="32" rx="6" fill="rgba(0,230,118,0.15)" stroke="rgba(0,230,118,0.4)" stroke-width="0.8"/>
+        <text x="405" y="42" fill="#00e676" font-size="11" font-weight="600" text-anchor="middle" font-family="Syne">24,750.10</text>
+        <text x="405" y="54" fill="#00e676" font-size="9" text-anchor="middle" font-family="DM Sans">+1.35%  ▲</text>
+      </svg>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section class="features">
+  <div class="feature">
+    <div class="feature-icon">
+      <svg viewBox="0 0 20 20" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="2,16 6,9 10,12 14,5 18,7"/>
+        <circle cx="18" cy="7" r="1.5" fill="#00e676" stroke="none"/>
+      </svg>
+    </div>
+    <h3>Real-time Data</h3>
+    <p>Get live market updates and never miss an opportunity.</p>
+  </div>
+  <div class="feature">
+    <div class="feature-icon">
+      <svg viewBox="0 0 20 20" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="3" y="10" width="3" height="8" rx="1"/>
+        <rect x="8.5" y="6" width="3" height="12" rx="1"/>
+        <rect x="14" y="2" width="3" height="16" rx="1"/>
+      </svg>
+    </div>
+    <h3>Advanced Analytics</h3>
+    <p>Powerful tools and charts to analyze like a pro.</p>
+  </div>
+  <div class="feature">
+    <div class="feature-icon">
+      <svg viewBox="0 0 20 20" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="2" y="4" width="16" height="13" rx="2"/>
+        <line x1="2" y1="8" x2="18" y2="8"/>
+        <line x1="6" y1="12" x2="14" y2="12"/>
+        <line x1="6" y1="15" x2="11" y2="15"/>
+      </svg>
+    </div>
+    <h3>Market Insights</h3>
+    <p>Expert insights and news to guide your decisions.</p>
+  </div>
+  <div class="feature">
+    <div class="feature-icon">
+      <svg viewBox="0 0 20 20" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M10 2L12.5 7.5H18L13.5 11L15.5 17L10 13.5L4.5 17L6.5 11L2 7.5H7.5Z"/>
+      </svg>
+    </div>
+    <h3>Secure &amp; Reliable</h3>
+    <p>Bank-grade security for a safe trading experience.</p>
+  </div>
+</section>
+
+<script>
+  // ── Ticker tape ──
+  const stocks = [
+    {name:'RELIANCE',val:'2,945.30',chg:'+0.82%',up:true},
+    {name:'TCS',val:'3,812.45',chg:'+1.14%',up:true},
+    {name:'HDFC',val:'1,678.20',chg:'-0.33%',up:false},
+    {name:'INFY',val:'1,432.60',chg:'+0.67%',up:true},
+    {name:'WIPRO',val:'468.90',chg:'+1.02%',up:true},
+    {name:'AAPL',val:'$189.30',chg:'+0.55%',up:true},
+    {name:'TSLA',val:'$248.60',chg:'-1.20%',up:false},
+    {name:'MSFT',val:'$415.80',chg:'+0.90%',up:true},
+    {name:'GOOGL',val:'$174.20',chg:'+0.44%',up:true},
+    {name:'AMZN',val:'$186.50',chg:'-0.18%',up:false},
+    {name:'NIFTY50',val:'24,750.10',chg:'+1.35%',up:true},
+    {name:'SENSEX',val:'81,317.25',chg:'+1.21%',up:true},
+    {name:'NASDAQ',val:'16,920.79',chg:'+1.45%',up:true},
+  ];
+
+  const tape = document.getElementById('tape');
+  const renderTape = () => {
+    const double = [...stocks, ...stocks];
+    tape.innerHTML = double.map(s => `
+      <span class="tape-item">
+        <span class="tape-name">${s.name}</span>
+        <span class="tape-val">${s.val}</span>
+        <span class="${s.up ? 'tape-up' : 'tape-down'}">${s.chg}</span>
+      </span>`).join('');
+  };
+  renderTape();
+
+  // ── Grid bg numbers ──
+  const grid = document.getElementById('grid-bg');
+  const nums = ['81,317','24,750','+1.35%','16,920','+1.21%','24,800','+1.45%','81,200'];
+  for(let i=0;i<80;i++){
+    const s = document.createElement('span');
+    s.textContent = nums[i % nums.length];
+    grid.appendChild(s);
+  }
+
+  // ── Live price simulation ──
+  function jitter(base, range) {
+    return (base + (Math.random()-0.5)*range).toFixed(2);
+  }
+  setInterval(() => {
+    document.getElementById('nifty-price').textContent =
+      Number(jitter(24750,8)).toLocaleString('en-IN', {minimumFractionDigits:2});
+    document.getElementById('sensex-price').textContent =
+      Number(jitter(81317,30)).toLocaleString('en-IN', {minimumFractionDigits:2});
+    document.getElementById('nasdaq-price').textContent =
+      Number(jitter(16920,10)).toLocaleString('en-IN', {minimumFractionDigits:2});
+  }, 1800);
+</script>
+</body>
+</html>

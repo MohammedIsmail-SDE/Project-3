@@ -1,0 +1,207 @@
+export default function MarketEdgeLandingPage() {
+  return (
+    <div className="min-h-screen bg-[#020817] text-white overflow-hidden relative">
+      {/* Background Glow */}
+      <div className="absolute top-0 left-0 w-full h-full overflow-hidden">
+        <div className="absolute -top-40 -left-20 w-[500px] h-[500px] bg-emerald-500/10 blur-3xl rounded-full animate-pulse"></div>
+        <div className="absolute bottom-0 right-0 w-[600px] h-[600px] bg-cyan-500/10 blur-3xl rounded-full animate-pulse"></div>
+      </div>
+
+      {/* Navbar */}
+      <header className="relative z-20 flex items-center justify-between px-10 py-6 border-b border-white/10 backdrop-blur-md">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-400 to-cyan-400 flex items-center justify-center font-bold text-black shadow-lg shadow-emerald-500/30">
+            M
+          </div>
+          <h1 className="text-2xl font-bold tracking-wide">MarketEdge</h1>
+        </div>
+
+        <nav className="hidden md:flex items-center gap-10 text-white/70">
+          <a className="hover:text-emerald-400 transition">Home</a>
+          <a className="hover:text-emerald-400 transition">Markets</a>
+          <a className="hover:text-emerald-400 transition">Insights</a>
+          <a className="hover:text-emerald-400 transition">Tools</a>
+          <a className="hover:text-emerald-400 transition">About</a>
+        </nav>
+
+        <button className="px-6 py-3 rounded-full border border-emerald-400/40 bg-white/5 hover:bg-emerald-500 hover:text-black transition-all duration-300 font-semibold shadow-lg shadow-emerald-500/20">
+          Get Started
+        </button>
+      </header>
+
+      {/* Hero Section */}
+      <section className="relative z-10 grid lg:grid-cols-2 items-center px-10 lg:px-20 py-20 min-h-[85vh]">
+        {/* Left Content */}
+        <div className="space-y-8">
+          <div className="space-y-5">
+            <h2 className="text-6xl lg:text-7xl font-extrabold leading-tight tracking-tight">
+              Trade Smarter.
+              <br />
+              <span className="bg-gradient-to-r from-emerald-400 to-cyan-400 bg-clip-text text-transparent animate-pulse">
+                Invest Better.
+              </span>
+            </h2>
+
+            <p className="text-xl text-gray-300 max-w-xl leading-relaxed">
+              Real-time market data, AI-powered analytics, and advanced insights to help you stay ahead of the market with confidence.
+            </p>
+          </div>
+
+          <div className="flex flex-wrap gap-5">
+            <button className="px-8 py-4 rounded-2xl bg-gradient-to-r from-emerald-400 to-cyan-400 text-black font-bold hover:scale-105 transition-transform duration-300 shadow-2xl shadow-emerald-500/40">
+              Get Started →
+            </button>
+
+            <button className="px-8 py-4 rounded-2xl border border-white/20 bg-white/5 backdrop-blur-md hover:border-emerald-400 hover:bg-white/10 transition-all duration-300">
+              Explore Markets
+            </button>
+          </div>
+
+          {/* Market Cards */}
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-6">
+            {[
+              { title: 'NIFTY 50', value: '24,750.10', gain: '+1.35%' },
+              { title: 'SENSEX', value: '81,317.25', gain: '+1.21%' },
+              { title: 'NASDAQ', value: '16,920.79', gain: '+1.45%' },
+            ].map((item, index) => (
+              <div
+                key={index}
+                className="group p-5 rounded-3xl bg-white/5 border border-white/10 backdrop-blur-xl hover:border-emerald-400/40 hover:-translate-y-2 transition-all duration-500 shadow-xl"
+              >
+                <p className="text-sm text-gray-400">{item.title}</p>
+                <h3 className="text-2xl font-bold mt-2">{item.value}</h3>
+                <div className="flex items-center justify-between mt-3">
+                  <span className="text-emerald-400 font-semibold">{item.gain}</span>
+                  <div className="flex items-end gap-1 h-10">
+                    {[
+                      { heightClass: 'h-2', delayClass: 'delay-0' },
+                      { heightClass: 'h-4', delayClass: 'delay-100' },
+                      { heightClass: 'h-3', delayClass: 'delay-200' },
+                      { heightClass: 'h-5', delayClass: 'delay-300' },
+                      { heightClass: 'h-[14px]', delayClass: 'delay-400' },
+                      { heightClass: 'h-6', delayClass: 'delay-500' },
+                    ].map((bar, i) => (
+                      <div
+                        key={i}
+                        className={`w-1 rounded-full bg-emerald-400/80 animate-pulse ${bar.heightClass} ${bar.delayClass}`}
+                      />
+                    ))}
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Right Content */}
+        <div className="relative flex justify-center items-center mt-20 lg:mt-0">
+          {/* Chart Background */}
+          <div className="absolute inset-0 flex items-center justify-center opacity-40">
+            <svg viewBox="0 0 800 400" className="w-full h-full">
+              <path
+                d="M0 320 Q100 260 200 280 T400 180 T600 100 T800 20"
+                stroke="#10b981"
+                strokeWidth="5"
+                fill="none"
+                strokeLinecap="round"
+                className="animate-pulse"
+              />
+            </svg>
+          </div>
+
+          {/* Animated Bull */}
+          <div className="relative z-10 animate-bounce-slow">
+            <div className="relative">
+              <img
+                src="https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?q=80&w=1200&auto=format&fit=crop"
+                alt="Bull"
+                className="w-[550px] rounded-[40px] border border-white/10 shadow-[0_0_80px_rgba(16,185,129,0.3)] object-cover"
+              />
+
+              {/* Floating Stats */}
+              <div className="absolute -top-6 right-0 bg-black/60 backdrop-blur-xl border border-emerald-400/30 px-6 py-4 rounded-2xl animate-float shadow-2xl">
+                <p className="text-sm text-gray-400">Portfolio Growth</p>
+                <h4 className="text-3xl font-bold text-emerald-400">+28%</h4>
+              </div>
+
+              <div className="absolute bottom-6 -left-10 bg-black/60 backdrop-blur-xl border border-cyan-400/30 px-6 py-4 rounded-2xl animate-float-delayed shadow-2xl">
+                <p className="text-sm text-gray-400">Market Trend</p>
+                <h4 className="text-3xl font-bold text-cyan-400">Bullish</h4>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Features */}
+      <section className="relative z-10 px-10 lg:px-20 pb-20">
+        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+          {[
+            {
+              title: 'Real-time Data',
+              desc: 'Live market updates and instant alerts.',
+            },
+            {
+              title: 'Advanced Analytics',
+              desc: 'AI-powered tools and predictive charts.',
+            },
+            {
+              title: 'Market Insights',
+              desc: 'Expert research and smart recommendations.',
+            },
+            {
+              title: 'Secure & Reliable',
+              desc: 'Bank-grade security for safe investing.',
+            },
+          ].map((feature, index) => (
+            <div
+              key={index}
+              className="group rounded-3xl p-8 bg-white/5 border border-white/10 backdrop-blur-xl hover:border-emerald-400/40 hover:bg-white/10 transition-all duration-500 hover:-translate-y-2"
+            >
+              <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-emerald-400/20 to-cyan-400/20 flex items-center justify-center border border-white/10 mb-5 group-hover:scale-110 transition-transform">
+                <div className="w-6 h-6 rounded-full bg-emerald-400"></div>
+              </div>
+
+              <h3 className="text-2xl font-bold mb-3">{feature.title}</h3>
+              <p className="text-gray-400 leading-relaxed">{feature.desc}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* Footer */}
+      <footer className="border-t border-white/10 py-8 text-center text-gray-500 relative z-10">
+        © 2026 MarketEdge. Built for next-generation traders.
+      </footer>
+
+      <style jsx>
+        @keyframes float {
+          0%, 100% { transform: translateY(0px); }
+          50% { transform: translateY(-12px); }
+        }
+
+        @keyframes floatDelayed {
+          0%, 100% { transform: translateY(0px); }
+          50% { transform: translateY(12px); }
+        }
+
+        @keyframes bounceSlow {
+          0%, 100% { transform: translateY(0px); }
+          50% { transform: translateY(-20px); }
+        }
+
+        .animate-float {
+          animation: float 4s ease-in-out infinite;
+        }
+
+        .animate-float-delayed {
+          animation: floatDelayed 5s ease-in-out infinite;
+        }
+
+        .animate-bounce-slow {
+          animation: bounceSlow 6s ease-in-out infinite;
+        }
+      </style>
+    </div>
+  );
+}
