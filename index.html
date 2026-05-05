@@ -380,7 +380,6 @@
     <li><a href="#">Tools</a></li>
     <li><a href="#">About</a></li>
   </ul>
-  <button class="btn-cta">Get Started</button>
 </nav>
 
 <!-- HERO -->
@@ -395,15 +394,20 @@
 
     <p class="hero-sub">Real-time market data, powerful analytics, and insights that help you stay ahead of the market.</p>
 
-    <div class="hero-btns">
-      <button class="btn-primary">
-        Get Started
+  <button class="btn-primary">Get Started
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+        <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+</button>
+<a href="dashboard.html" class="btn-secondary">Explore Markets →</a>
+<div class="hero-btns">
+    <button class="btn-primary">Get Started
         <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-          <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
-      </button>
-      <button class="btn-secondary">Explore Markets</button>
-    </div>
+    </button>
+    <a href="dashboard.html" class="btn-secondary">Explore Markets →</a>
+</div>
 
     <!-- TICKER CARDS -->
     <div class="ticker-row">
@@ -595,12 +599,39 @@
 </section>
 
 <script>
+
+  // ===== MARKET DATA =====
+async function loadMarketData() {
+    const stocks = [
+        { symbol: "^NSEI",  elementId: "nifty-price",   changeId: "nifty-change"   },
+        { symbol: "^BSESN", elementId: "sensex-price",  changeId: "sensex-change"  },
+        { symbol: "^IXIC",  elementId: "nasdaq-price",  changeId: "nasdaq-change"  },
+    ];
+
+    for (let stock of stocks) {
+        try {
+            const res = await fetch(`http://localhost:8000/price/${stock.symbol}`);
+            const data = await res.json();
+
+            document.getElementById(stock.elementId).innerText = 
+                data.price.toLocaleString();
+            document.getElementById(stock.changeId).innerText = 
+                `+${data.change_percent}%`;
+        } catch (err) {
+            console.error("Failed to load", stock.symbol, err);
+        }
+    }
+}
+
+// Refresh every 5 seconds
+loadMarketData();
+setInterval(loadMarketData, 5000);
   // ── Ticker tape ──
   const stocks = [
     {name:'RELIANCE',val:'2,945.30',chg:'+0.82%',up:true},
     {name:'TCS',val:'3,812.45',chg:'+1.14%',up:true},
     {name:'HDFC',val:'1,678.20',chg:'-0.33%',up:false},
-    {name:'INFY',val:'1,432.60',chg:'+0.67%',up:true},
+    {name:'INCY',val:'1,432.60',chg:'+0.67%',up:true},
     {name:'WIPRO',val:'468.90',chg:'+1.02%',up:true},
     {name:'AAPL',val:'$189.30',chg:'+0.55%',up:true},
     {name:'TSLA',val:'$248.60',chg:'-1.20%',up:false},

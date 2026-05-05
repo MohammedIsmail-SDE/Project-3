@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>MarketEdge — Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        :root {
+            --bg: #060d10; --bg2: #0b1418; --bg3: #0f1d22;
+            --green: #00e676; --text: #e8f0f2; --muted: #7a9aa8;
+            --border: rgba(0,230,118,0.12); --red: #ff4d4d;
+        }
+        body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); display: flex; height: 100vh; overflow: hidden; }
+
+        /* SIDEBAR */
+        .sidebar { width: 210px; background: var(--bg2); border-right: 1px solid var(--border); display: flex; flex-direction: column; padding: 24px 0; flex-shrink: 0; }
+        .sidebar-logo { display: flex; align-items: center; gap: 10px; padding: 0 20px 28px; font-family: 'Syne', sans-serif; font-weight: 700; font-size: 18px; }
+        .logo-icon { width: 34px; height: 34px; background: rgba(0,230,118,0.15); border-radius: 8px; display: flex; align-items: center; justify-content: center; }
+        .nav-item { display: flex; align-items: center; gap: 12px; padding: 11px 20px; color: var(--muted); cursor: pointer; transition: all 0.2s; font-size: 14px; text-decoration: none; }
+        .nav-item:hover, .nav-item.active { color: var(--text); background: rgba(0,230,118,0.07); border-right: 2px solid var(--green); }
+        .nav-item.active { color: var(--green); }
+        .upgrade-box { margin: auto 12px 0; background: rgba(0,230,118,0.07); border: 1px solid var(--border); border-radius: 12px; padding: 16px; }
+        .upgrade-box h4 { font-size: 13px; margin-bottom: 6px; }
+        .upgrade-box p { font-size: 11px; color: var(--muted); margin-bottom: 12px; }
+        .upgrade-btn { background: var(--green); color: #000; border: none; border-radius: 6px; padding: 7px 14px; font-size: 12px; font-weight: 600; cursor: pointer; width: 100%; }
+
+        /* MAIN */
+        .main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+
+        /* TOP BAR */
+        .topbar { background: var(--bg2); border-bottom: 1px solid var(--border); padding: 0 24px; height: 56px; display: flex; align-items: center; gap: 32px; flex-shrink: 0; }
+        .ticker-item { display: flex; flex-direction: column; }
+        .ticker-item .t-name { font-size: 10px; color: var(--muted); }
+        .ticker-item .t-price { font-size: 13px; font-weight: 600; }
+        .ticker-item .t-change { font-size: 11px; color: var(--green); }
+        .topbar-right { margin-left: auto; display: flex; align-items: center; gap: 16px; }
+        .search-box { background: var(--bg3); border: 1px solid var(--border); border-radius: 8px; padding: 7px 14px; font-size: 13px; color: var(--text); outline: none; width: 220px; }
+        .avatar { width: 32px; height: 32px; background: var(--green); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; color: #000; }
+
+        /* CONTENT */
+        .content { flex: 1; overflow-y: auto; padding: 24px; display: grid; grid-template-columns: 1fr 300px; gap: 20px; }
+        .content-left { display: flex; flex-direction: column; gap: 20px; }
+
+        /* STAT CARDS */
+        .stat-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 14px; }
+        .stat-card { background: var(--bg2); border: 1px solid var(--border); border-radius: 12px; padding: 16px; }
+        .stat-card .s-label { font-size: 11px; color: var(--muted); margin-bottom: 8px; }
+        .stat-card .s-value { font-size: 20px; font-weight: 700; font-family: 'Syne',sans-serif; }
+        .stat-card .s-change { font-size: 12px; color: var(--green); margin-top: 4px; }
+
+        /* CHART SECTION */
+        .chart-card { background: var(--bg2); border: 1px solid var(--border); border-radius: 12px; padding: 20px; }
+        .chart-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+        .chart-title { font-size: 16px; font-weight: 600; }
+        .chart-price { font-size: 24px; font-weight: 700; color: var(--green); }
+        .chart-change { font-size: 13px; color: var(--green); }
+        .time-tabs { display: flex; gap: 6px; margin-bottom: 16px; }
+        .time-tab { padding: 4px 10px; border-radius: 5px; font-size: 12px; cursor: pointer; color: var(--muted); border: none; background: none; }
+        .time-tab.active { background: rgba(0,230,118,0.15); color: var(--green); }
+        canvas#chartCanvas { width: 100% !important; height: 200px !important; }
+
+        /* TABLES */
+        .tables-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+        .table-card { background: var(--bg2); border: 1px solid var(--border); border-radius: 12px; padding: 16px; }
+        .table-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
+        .table-header h3 { font-size: 14px; font-weight: 600; }
+        .view-all { font-size: 12px; color: var(--green); cursor: pointer; }
+        table { width: 100%; border-collapse: collapse; font-size: 12px; }
+        th { color: var(--muted); font-weight: 400; padding: 0 0 8px; text-align: left; }
+        td { padding: 8px 0; border-top: 1px solid rgba(255,255,255,0.04); }
+        .gain { color: var(--green); } .loss { color: var(--red); }
+        .stock-name { font-weight: 600; font-size: 12px; }
+        .stock-sub { font-size: 10px; color: var(--muted); }
+
+        /* RIGHT PANEL */
+        .right-panel { display: flex; flex-direction: column; gap: 16px; }
+        .panel-card { background: var(--bg2); border: 1px solid var(--border); border-radius: 12px; padding: 16px; }
+        .panel-title { font-size: 13px; font-weight: 600; margin-bottom: 12px; display: flex; justify-content: space-between; }
+        .panel-title span { color: var(--green); font-size: 11px; cursor: pointer; }
+        .market-row { display: flex; justify-content: space-between; align-items: center; padding: 7px 0; border-bottom: 1px solid rgba(255,255,255,0.04); font-size: 13px; }
+        .news-item { padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.04); }
+        .news-item h4 { font-size: 12px; margin-bottom: 4px; line-height: 1.4; }
+        .news-meta { font-size: 10px; color: var(--muted); }
+        .event-item { display: flex; justify-content: space-between; padding: 8px 0; font-size: 12px; border-bottom: 1px solid rgba(255,255,255,0.04); }
+        .event-item .e-date { color: var(--muted); font-size: 11px; }
+    </style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<div class="sidebar">
+    <div class="sidebar-logo">
+        <div class="logo-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00e676" stroke-width="2"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>
+        </div>
+        MarketEdge
+    </div>
+    <a class="nav-item active" href="#">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+        Dashboard
+    </a>
+    <a class="nav-item" href="#">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+        Watchlist
+    </a>
+    <a class="nav-item" href="#">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+        Markets
+    </a>
+    <a class="nav-item" href="#">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+        Analysis
+    </a>
+    <a class="nav-item" href="#">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v2"/><path d="M2 10h6"/><path d="M2 14h6"/><path d="M2 18h6"/></svg>
+        News
+    </a>
+    <a class="nav-item" href="#">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+        Portfolio
+    </a>
+    <a class="nav-item" href="#">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+        Alerts
+    </a>
+    <a class="nav-item" href="#">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+        Calendar
+    </a>
+    <a class="nav-item" href="#">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+        Reports
+    </a>
+    <a class="nav-item" href="#">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M4.93 4.93a10 10 0 0 0 0 14.14"/></svg>
+        Settings
+    </a>
+    <div class="upgrade-box">
+        <h4>Upgrade to Pro</h4>
+        <p>Unlock advanced tools, real-time alerts and more.</p>
+        <button class="upgrade-btn">Upgrade Now</button>
+    </div>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+    <!-- TOPBAR -->
+    <div class="topbar">
+        <div class="ticker-item">
+            <span class="t-name">NIFTY 50</span>
+            <span class="t-price" id="tb-nifty">24,750.10</span>
+            <span class="t-change" id="tb-nifty-c">+1.35%</span>
+        </div>
+        <div class="ticker-item">
+            <span class="t-name">SENSEX</span>
+            <span class="t-price" id="tb-sensex">81,317.25</span>
+            <span class="t-change" id="tb-sensex-c">+1.21%</span>
+        </div>
+        <div class="ticker-item">
+            <span class="t-name">NASDAQ</span>
+            <span class="t-price" id="tb-nasdaq">16,920.79</span>
+            <span class="t-change" id="tb-nasdaq-c">+1.45%</span>
+        </div>
+        <div class="topbar-right">
+            <input class="search-box" placeholder="🔍 Search stocks, indices, news..."/>
+            <div class="avatar">AS</div>
+            <span style="font-size:13px;">Arjun Singh ▾</span>
+        </div>
+    </div>
+
+    <!-- CONTENT -->
+    <div class="content">
+        <div class="content-left">
+            <div>
+                <h2 style="font-family:'Syne',sans-serif;font-size:20px;">Dashboard</h2>
+                <p style="color:var(--muted);font-size:13px;margin-top:4px;">Welcome back, Arjun! Here's what's happening in the market today.</p>
+            </div>
+
+            <!-- STAT CARDS -->
+            <div class="stat-grid">
+                <div class="stat-card">
+                    <div class="s-label">Portfolio Value</div>
+                    <div class="s-value">₹12,56,890</div>
+                    <div class="s-change">+2.35% today</div>
+                </div>
+                <div class="stat-card">
+                    <div class="s-label">Today's P&L</div>
+                    <div class="s-value">₹28,890</div>
+                    <div class="s-change">+2.35%</div>
+                </div>
+                <div class="stat-card">
+                    <div class="s-label">Total Gain</div>
+                    <div class="s-value">₹1,56,780</div>
+                    <div class="s-change">+14.25%</div>
+                </div>
+                <div class="stat-card">
+                    <div class="s-label">Buying Power</div>
+                    <div class="s-value">₹2,45,600</div>
+                    <div class="s-change" style="color:var(--muted);">Available</div>
+                </div>
+            </div>
+
+            <!-- CHART -->
+            <div class="chart-card">
+                <div class="chart-header">
+                    <div>
+                        <div class="chart-title">NIFTY 50</div>
+                        <div style="display:flex;align-items:center;gap:10px;margin-top:4px;">
+                            <span class="chart-price" id="chart-price">24,750.10</span>
+                            <span class="chart-change">+330.10 (1.35%)</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="time-tabs">
+                    <button class="time-tab active">1D</button>
+                    <button class="time-tab">1W</button>
+                    <button class="time-tab">1M</button>
+                    <button class="time-tab">3M</button>
+                    <button class="time-tab">1Y</button>
+                </div>
+                <canvas id="chartCanvas"></canvas>
+            </div>
+
+            <!-- TOP GAINERS / LOSERS -->
+            <div class="tables-grid">
+                <div class="table-card">
+                    <div class="table-header">
+                        <h3>Top Gainers</h3>
+                        <span class="view-all">View All</span>
+                    </div>
+                    <table>
+                        <tr><th>Stock</th><th>Price</th><th>Change</th><th>%</th></tr>
+                        <tr><td><div class="stock-name">RELIANCE</div><div class="stock-sub">Reliance Industries</div></td><td>₹3,012</td><td class="gain">+45.30</td><td class="gain">+1.53%</td></tr>
+                        <tr><td><div class="stock-name">TCS</div><div class="stock-sub">Tata Consultancy</div></td><td>₹3,850</td><td class="gain">+52.60</td><td class="gain">+1.38%</td></tr>
+                        <tr><td><div class="stock-name">HDFCBANK</div><div class="stock-sub">HDFC Bank</div></td><td>₹1,678</td><td class="gain">+22.75</td><td class="gain">+1.37%</td></tr>
+                        <tr><td><div class="stock-name">ICICIBANK</div><div class="stock-sub">ICICI Bank</div></td><td>₹1,245</td><td class="gain">+16.80</td><td class="gain">+1.37%</td></tr>
+                        <tr><td><div class="stock-name">INFY</div><div class="stock-sub">Infosys</div></td><td>₹1,895</td><td class="gain">+24.10</td><td class="gain">+1.29%</td></tr>
+                    </table>
+                </div>
+                <div class="table-card">
+                    <div class="table-header">
+                        <h3>Top Losers</h3>
+                        <span class="view-all" style="color:var(--red);">View All</span>
+                    </div>
+                    <table>
+                        <tr><th>Stock</th><th>Price</th><th>Change</th><th>%</th></tr>
+                        <tr><td><div class="stock-name">WIPRO</div><div class="stock-sub">Wipro Limited</div></td><td>₹487</td><td class="loss">-8.40</td><td class="loss">-1.69%</td></tr>
+                        <tr><td><div class="stock-name">TECHM</div><div class="stock-sub">Tech Mahindra</div></td><td>₹1,230</td><td class="loss">-15.30</td><td class="loss">-1.23%</td></tr>
+                        <tr><td><div class="stock-name">M&M</div><div class="stock-sub">Mahindra & Mahindra</div></td><td>₹2,892</td><td class="loss">-24.60</td><td class="loss">-0.84%</td></tr>
+                        <tr><td><div class="stock-name">TITAN</div><div class="stock-sub">Titan Company</div></td><td>₹3,456</td><td class="loss">-18.20</td><td class="loss">-0.52%</td></tr>
+                        <tr><td><div class="stock-name">BAJFINANCE</div><div class="stock-sub">Bajaj Finance</div></td><td>₹7,876</td><td class="loss">-32.10</td><td class="loss">-0.41%</td></tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- RIGHT PANEL -->
+        <div class="right-panel">
+            <div class="panel-card">
+                <div class="panel-title">Market Overview <span>View All</span></div>
+                <div class="market-row"><span>NIFTY 50</span><span id="mo-nifty">24,750.10</span><span class="gain" id="mo-nifty-c">+1.35%</span></div>
+                <div class="market-row"><span>SENSEX</span><span id="mo-sensex">81,317.25</span><span class="gain" id="mo-sensex-c">+1.21%</span></div>
+                <div class="market-row"><span>NASDAQ</span><span id="mo-nasdaq">16,920.79</span><span class="gain" id="mo-nasdaq-c">+1.45%</span></div>
+                <div class="market-row"><span>DOW JONES</span><span>39,512.84</span><span class="gain">+0.89%</span></div>
+                <div class="market-row"><span>BANK NIFTY</span><span>56,132.90</span><span class="gain">+1.68%</span></div>
+            </div>
+            <div class="panel-card">
+                <div class="panel-title">Recent News <span>View All</span></div>
+                <div class="news-item"><h4>Markets rally for second day as Nifty closes above 24,700</h4><div class="news-meta">5 mins ago · Market News</div></div>
+                <div class="news-item"><h4>RBI keeps repo rate unchanged, maintains accommodative stance</h4><div class="news-meta">1 hour ago · Economy</div></div>
+                <div class="news-item"><h4>Global markets trade higher amid positive economic data</h4><div class="news-meta">2 hours ago · Global Markets</div></div>
+            </div>
+            <div class="panel-card">
+                <div class="panel-title">Upcoming Events</div>
+                <div class="event-item"><span>NIFTY Expiry</span><span class="e-date">29 May 2024</span></div>
+                <div class="event-item"><span>RBI Monetary Policy</span><span class="e-date">07 June 2024</span></div>
+                <div class="event-item"><span>Q1 Results Season</span><span class="e-date">Jul 2024</span></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    // CHART
+    const ctx = document.getElementById('chartCanvas').getContext('2d');
+    const labels = ['09:15','09:30','10:00','10:30','11:00','11:30','12:00','12:30','13:00','13:30','14:00','14:30','15:00','15:30'];
+    const chartData = [24420,24450,24480,24510,24555,24590,24620,24580,24650,24690,24710,24730,24750,24750];
+    new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels,
+            datasets: [{
+                data: chartData,
+                borderColor: '#00e676',
+                borderWidth: 2,
+                fill: true,
+                backgroundColor: 'rgba(0,230,118,0.07)',
+                tension: 0.4,
+                pointRadius: 0
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: { legend: { display: false } },
+            scales: {
+                x: { ticks: { color: '#7a9aa8', font: { size: 10 } }, grid: { color: 'rgba(255,255,255,0.04)' } },
+                y: { ticks: { color: '#7a9aa8', font: { size: 10 } }, grid: { color: 'rgba(255,255,255,0.04)' } }
+            }
+        }
+    });
+
+    // TIME TABS
+    document.querySelectorAll('.time-tab').forEach(tab => {
+        tab.addEventListener('click', () => {
+            document.querySelectorAll('.time-tab').forEach(t => t.classList.remove('active'));
+            tab.classList.add('active');
+        });
+    });
+
+    // LIVE PRICES FROM BACKEND
+    async function loadPrices() {
+        const stocks = [
+            { symbol: "^NSEI",  ids: ["tb-nifty","mo-nifty"],   changes: ["tb-nifty-c","mo-nifty-c"]  },
+            { symbol: "^BSESN", ids: ["tb-sensex","mo-sensex"],  changes: ["tb-sensex-c","mo-sensex-c"] },
+            { symbol: "^IXIC",  ids: ["tb-nasdaq","mo-nasdaq"],  changes: ["tb-nasdaq-c","mo-nasdaq-c"] },
+        ];
+        for (let s of stocks) {
+            try {
+                const res = await fetch(`http://localhost:8000/price/${s.symbol}`);
+                const data = await res.json();
+                s.ids.forEach(id => document.getElementById(id).innerText = data.price.toLocaleString());
+                s.changes.forEach(id => {
+                    const el = document.getElementById(id);
+                    el.innerText = `${data.change_percent > 0 ? '+' : ''}${data.change_percent}%`;
+                    el.style.color = data.change_percent >= 0 ? 'var(--green)' : 'var(--red)';
+                });
+            } catch(e) {}
+        }
+    }
+    loadPrices();
+    setInterval(loadPrices, 5000);
+</script>
+</body>
+</html>
