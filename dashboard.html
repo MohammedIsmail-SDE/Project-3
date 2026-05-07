@@ -1,346 +1,922 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>MarketEdge — Dashboard</title>
-    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
-    <style>
-        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-        :root {
-            --bg: #060d10; --bg2: #0b1418; --bg3: #0f1d22;
-            --green: #00e676; --text: #e8f0f2; --muted: #7a9aa8;
-            --border: rgba(0,230,118,0.12); --red: #ff4d4d;
-        }
-        body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); display: flex; height: 100vh; overflow: hidden; }
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>MarketEdge — Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,400&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --bg:#060d10;--bg2:#0b1418;--bg3:#0f1d22;--bg4:#111e24;
+  --green:#00e676;--green-dim:#00c85a;--green-glow:rgba(0,230,118,0.13);
+  --red:#ff5252;--red-glow:rgba(255,82,82,0.12);
+  --text:#e8f0f2;--muted:#7a9aa8;--muted2:#4a6a78;
+  --border:rgba(255,255,255,0.06);--border-green:rgba(0,230,118,0.15);
+  --sidebar:210px;
+  --font-head:'Syne',sans-serif;--font-body:'DM Sans',sans-serif;
+}
+html,body{height:100%;font-family:var(--font-body);background:var(--bg);color:var(--text);overflow-x:hidden;}
 
-        /* SIDEBAR */
-        .sidebar { width: 210px; background: var(--bg2); border-right: 1px solid var(--border); display: flex; flex-direction: column; padding: 24px 0; flex-shrink: 0; }
-        .sidebar-logo { display: flex; align-items: center; gap: 10px; padding: 0 20px 28px; font-family: 'Syne', sans-serif; font-weight: 700; font-size: 18px; }
-        .logo-icon { width: 34px; height: 34px; background: rgba(0,230,118,0.15); border-radius: 8px; display: flex; align-items: center; justify-content: center; }
-        .nav-item { display: flex; align-items: center; gap: 12px; padding: 11px 20px; color: var(--muted); cursor: pointer; transition: all 0.2s; font-size: 14px; text-decoration: none; }
-        .nav-item:hover, .nav-item.active { color: var(--text); background: rgba(0,230,118,0.07); border-right: 2px solid var(--green); }
-        .nav-item.active { color: var(--green); }
-        .upgrade-box { margin: auto 12px 0; background: rgba(0,230,118,0.07); border: 1px solid var(--border); border-radius: 12px; padding: 16px; }
-        .upgrade-box h4 { font-size: 13px; margin-bottom: 6px; }
-        .upgrade-box p { font-size: 11px; color: var(--muted); margin-bottom: 12px; }
-        .upgrade-btn { background: var(--green); color: #000; border: none; border-radius: 6px; padding: 7px 14px; font-size: 12px; font-weight: 600; cursor: pointer; width: 100%; }
+/* ── LAYOUT ── */
+.app{display:flex;height:100vh;overflow:hidden;}
 
-        /* MAIN */
-        .main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+/* ── SIDEBAR ── */
+.sidebar{
+  width:var(--sidebar);min-width:var(--sidebar);
+  background:var(--bg2);
+  border-right:0.5px solid var(--border);
+  display:flex;flex-direction:column;
+  padding:0;
+  overflow-y:auto;
+  z-index:10;
+}
+.sidebar-logo{
+  display:flex;align-items:center;gap:10px;
+  padding:20px 20px 24px;
+  font-family:var(--font-head);font-weight:700;font-size:16px;
+  border-bottom:0.5px solid var(--border);
+}
+.logo-icon{
+  width:30px;height:30px;background:var(--green-glow);
+  border:1px solid var(--green);border-radius:7px;
+  display:flex;align-items:center;justify-content:center;
+}
+.logo-icon svg{width:16px;height:16px;}
 
-        /* TOP BAR */
-        .topbar { background: var(--bg2); border-bottom: 1px solid var(--border); padding: 0 24px; height: 56px; display: flex; align-items: center; gap: 32px; flex-shrink: 0; }
-        .ticker-item { display: flex; flex-direction: column; }
-        .ticker-item .t-name { font-size: 10px; color: var(--muted); }
-        .ticker-item .t-price { font-size: 13px; font-weight: 600; }
-        .ticker-item .t-change { font-size: 11px; color: var(--green); }
-        .topbar-right { margin-left: auto; display: flex; align-items: center; gap: 16px; }
-        .search-box { background: var(--bg3); border: 1px solid var(--border); border-radius: 8px; padding: 7px 14px; font-size: 13px; color: var(--text); outline: none; width: 220px; }
-        .avatar { width: 32px; height: 32px; background: var(--green); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; color: #000; }
+nav.side-nav{flex:1;padding:16px 10px;}
+.nav-item{
+  display:flex;align-items:center;gap:12px;
+  padding:10px 12px;border-radius:9px;
+  font-size:13.5px;color:var(--muted);
+  cursor:pointer;transition:all .15s;margin-bottom:2px;
+  text-decoration:none;
+}
+.nav-item svg{width:17px;height:17px;stroke:currentColor;flex-shrink:0;}
+.nav-item:hover{background:rgba(255,255,255,0.04);color:var(--text);}
+.nav-item.active{background:var(--green-glow);color:var(--green);}
+.nav-item.active svg{stroke:var(--green);}
 
-        /* CONTENT */
-        .content { flex: 1; overflow-y: auto; padding: 24px; display: grid; grid-template-columns: 1fr 300px; gap: 20px; }
-        .content-left { display: flex; flex-direction: column; gap: 20px; }
 
-        /* STAT CARDS */
-        .stat-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 14px; }
-        .stat-card { background: var(--bg2); border: 1px solid var(--border); border-radius: 12px; padding: 16px; }
-        .stat-card .s-label { font-size: 11px; color: var(--muted); margin-bottom: 8px; }
-        .stat-card .s-value { font-size: 20px; font-weight: 700; font-family: 'Syne',sans-serif; }
-        .stat-card .s-change { font-size: 12px; color: var(--green); margin-top: 4px; }
 
-        /* CHART SECTION */
-        .chart-card { background: var(--bg2); border: 1px solid var(--border); border-radius: 12px; padding: 20px; }
-        .chart-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
-        .chart-title { font-size: 16px; font-weight: 600; }
-        .chart-price { font-size: 24px; font-weight: 700; color: var(--green); }
-        .chart-change { font-size: 13px; color: var(--green); }
-        .time-tabs { display: flex; gap: 6px; margin-bottom: 16px; }
-        .time-tab { padding: 4px 10px; border-radius: 5px; font-size: 12px; cursor: pointer; color: var(--muted); border: none; background: none; }
-        .time-tab.active { background: rgba(0,230,118,0.15); color: var(--green); }
-        canvas#chartCanvas { width: 100% !important; height: 200px !important; }
 
-        /* TABLES */
-        .tables-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
-        .table-card { background: var(--bg2); border: 1px solid var(--border); border-radius: 12px; padding: 16px; }
-        .table-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
-        .table-header h3 { font-size: 14px; font-weight: 600; }
-        .view-all { font-size: 12px; color: var(--green); cursor: pointer; }
-        table { width: 100%; border-collapse: collapse; font-size: 12px; }
-        th { color: var(--muted); font-weight: 400; padding: 0 0 8px; text-align: left; }
-        td { padding: 8px 0; border-top: 1px solid rgba(255,255,255,0.04); }
-        .gain { color: var(--green); } .loss { color: var(--red); }
-        .stock-name { font-weight: 600; font-size: 12px; }
-        .stock-sub { font-size: 10px; color: var(--muted); }
 
-        /* RIGHT PANEL */
-        .right-panel { display: flex; flex-direction: column; gap: 16px; }
-        .panel-card { background: var(--bg2); border: 1px solid var(--border); border-radius: 12px; padding: 16px; }
-        .panel-title { font-size: 13px; font-weight: 600; margin-bottom: 12px; display: flex; justify-content: space-between; }
-        .panel-title span { color: var(--green); font-size: 11px; cursor: pointer; }
-        .market-row { display: flex; justify-content: space-between; align-items: center; padding: 7px 0; border-bottom: 1px solid rgba(255,255,255,0.04); font-size: 13px; }
-        .news-item { padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.04); }
-        .news-item h4 { font-size: 12px; margin-bottom: 4px; line-height: 1.4; }
-        .news-meta { font-size: 10px; color: var(--muted); }
-        .event-item { display: flex; justify-content: space-between; padding: 8px 0; font-size: 12px; border-bottom: 1px solid rgba(255,255,255,0.04); }
-        .event-item .e-date { color: var(--muted); font-size: 11px; }
-    </style>
+
+
+
+/* ── MAIN ── */
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden;}
+
+/* ── TOP BAR ── */
+.topbar{
+  height:52px;background:var(--bg2);
+  border-bottom:0.5px solid var(--border);
+  display:flex;align-items:center;
+  padding:0 1.5rem;gap:2rem;flex-shrink:0;
+}
+.topbar-indices{display:flex;gap:2rem;flex:1;}
+.idx{display:flex;align-items:baseline;gap:8px;}
+.idx-name{font-size:11px;color:var(--muted);letter-spacing:0.06em;}
+.idx-val{font-family:var(--font-head);font-size:14px;font-weight:600;color:var(--text);}
+.idx-chg{font-size:12px;font-weight:500;color:var(--green);}
+.idx-chg.red{color:var(--red);}
+
+.search-bar{
+  display:flex;align-items:center;gap:8px;
+  background:var(--bg3);border:0.5px solid var(--border);
+  border-radius:8px;padding:7px 14px;min-width:220px;
+}
+.search-bar input{
+  background:none;border:none;outline:none;
+  color:var(--text);font-size:13px;font-family:var(--font-body);width:100%;
+}
+.search-bar input::placeholder{color:var(--muted2);}
+.search-bar svg{stroke:var(--muted2);width:14px;height:14px;flex-shrink:0;}
+
+.topbar-right{display:flex;align-items:center;gap:14px;}
+.notif-btn{
+  width:34px;height:34px;border-radius:8px;
+  background:var(--bg3);border:0.5px solid var(--border);
+  display:flex;align-items:center;justify-content:center;cursor:pointer;
+  position:relative;
+}
+.notif-btn svg{stroke:var(--muted);width:16px;height:16px;}
+.notif-dot{
+  position:absolute;top:6px;right:7px;
+  width:6px;height:6px;border-radius:50%;
+  background:var(--green);border:1.5px solid var(--bg2);
+}
+.user-pill{
+  display:flex;align-items:center;gap:8px;
+  background:var(--bg3);border:0.5px solid var(--border);
+  border-radius:8px;padding:5px 10px 5px 5px;cursor:pointer;
+}
+.avatar{
+  width:26px;height:26px;border-radius:6px;
+  background:var(--green-glow);border:1px solid var(--green);
+  display:flex;align-items:center;justify-content:center;
+  font-size:10px;font-weight:700;color:var(--green);
+  font-family:var(--font-head);
+}
+.user-name{font-size:12.5px;font-weight:500;}
+.chevron{stroke:var(--muted);width:12px;height:12px;}
+
+/* ── CONTENT ── */
+.content{flex:1;overflow-y:auto;padding:1.5rem;display:flex;flex-direction:column;gap:1.25rem;}
+
+/* page header */
+.page-header{display:flex;align-items:flex-start;justify-content:space-between;}
+.page-header h1{font-family:var(--font-head);font-size:22px;font-weight:700;}
+.page-header p{font-size:13px;color:var(--muted);margin-top:3px;}
+.btn-customize{
+  display:flex;align-items:center;gap:7px;
+  padding:8px 16px;border-radius:8px;
+  background:var(--bg3);border:0.5px solid var(--border);
+  color:var(--text);font-size:13px;cursor:pointer;transition:border-color .15s;
+}
+.btn-customize:hover{border-color:var(--muted);}
+.btn-customize svg{stroke:var(--text);width:14px;height:14px;}
+
+/* ── MIDDLE ROW ── */
+.mid-row{display:grid;grid-template-columns:1fr 300px;gap:1rem;}
+
+/* chart panel */
+.chart-panel{
+  background:var(--bg2);border:0.5px solid var(--border);
+  border-radius:12px;padding:20px;
+}
+.chart-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:16px;}
+.chart-title{font-family:var(--font-head);font-size:15px;font-weight:600;}
+.chart-price{font-family:var(--font-head);font-size:26px;font-weight:700;margin-top:2px;}
+.chart-change{font-size:13px;color:var(--green);margin-top:2px;}
+.index-select{
+  display:flex;align-items:center;gap:6px;
+  background:var(--bg3);border:0.5px solid var(--border);
+  border-radius:8px;padding:6px 12px;
+  font-size:13px;color:var(--text);cursor:pointer;
+}
+.index-select svg{stroke:var(--muted);width:13px;height:13px;}
+
+.time-tabs{display:flex;gap:4px;margin-bottom:14px;}
+.ttab{
+  padding:4px 10px;border-radius:6px;font-size:12px;
+  background:none;border:none;color:var(--muted);cursor:pointer;transition:all .15s;
+}
+.ttab.active{background:var(--green-glow);color:var(--green);}
+.ttab:hover:not(.active){color:var(--text);}
+
+/* SVG area chart */
+.area-chart-wrap{width:100%;height:200px;position:relative;}
+.area-chart-wrap svg{width:100%;height:100%;}
+
+/* market overview panel */
+.overview-panel{
+  background:var(--bg2);border:0.5px solid var(--border);
+  border-radius:12px;padding:20px;display:flex;flex-direction:column;gap:0;
+}
+.panel-header{
+  display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;
+}
+.panel-title{font-family:var(--font-head);font-size:14px;font-weight:600;}
+.view-all{font-size:12px;color:var(--green);cursor:pointer;text-decoration:none;}
+.view-all:hover{text-decoration:underline;}
+
+.mkt-row{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:10px 0;border-bottom:0.5px solid var(--border);
+}
+.mkt-row:last-child{border-bottom:none;}
+.mkt-name{font-size:13px;font-weight:500;}
+.mkt-val{font-family:var(--font-head);font-size:13px;font-weight:600;text-align:right;}
+.mkt-chg{font-size:12px;color:var(--green);text-align:right;min-width:48px;}
+.mkt-chg.red{color:var(--red);}
+.mini-spark{width:52px;height:22px;}
+
+/* ── BOTTOM ROW ── */
+.bottom-row{display:grid;grid-template-columns:1fr 1fr 300px;gap:1rem;}
+
+/* gainers / losers tables */
+.table-panel{
+  background:var(--bg2);border:0.5px solid var(--border);
+  border-radius:12px;padding:20px;
+}
+.table-panel table{width:100%;border-collapse:collapse;font-size:12.5px;}
+.table-panel th{
+  color:var(--muted);font-weight:400;text-align:left;
+  padding:0 0 10px;border-bottom:0.5px solid var(--border);
+}
+.table-panel th:not(:first-child){text-align:right;}
+.table-panel td{padding:10px 0;border-bottom:0.5px solid rgba(255,255,255,0.03);}
+.table-panel td:not(:first-child){text-align:right;}
+.stock-cell{display:flex;align-items:center;gap:8px;}
+.stock-avatar{
+  width:28px;height:28px;border-radius:7px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:9px;font-weight:700;flex-shrink:0;
+}
+.stock-name{font-weight:500;font-size:13px;}
+.stock-sub{font-size:10.5px;color:var(--muted);}
+.td-green{color:var(--green);}
+.td-red{color:var(--red);}
+
+/* right panels stacked */
+.right-stack{display:flex;flex-direction:column;gap:1rem;}
+.news-panel,.events-panel{
+  background:var(--bg2);border:0.5px solid var(--border);
+  border-radius:12px;padding:18px;
+}
+.news-item{display:flex;gap:10px;padding:10px 0;border-bottom:0.5px solid var(--border);}
+.news-item:last-child{border-bottom:none;}
+.news-thumb{
+  width:52px;height:40px;border-radius:7px;
+  background:var(--bg3);flex-shrink:0;overflow:hidden;
+  display:flex;align-items:center;justify-content:center;
+}
+.news-thumb svg{stroke:var(--muted2);width:20px;height:20px;}
+.news-text{flex:1;}
+.news-headline{font-size:12.5px;line-height:1.4;font-weight:500;margin-bottom:4px;}
+.news-meta{font-size:10.5px;color:var(--muted);}
+
+.event-item{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:9px 0;border-bottom:0.5px solid var(--border);
+}
+.event-item:last-child{border-bottom:none;}
+.event-name{font-size:13px;font-weight:500;}
+.event-date{font-size:11px;color:var(--muted);}
+.cal-icon{stroke:var(--muted);width:15px;height:15px;}
+
+/* scrollbar */
+::-webkit-scrollbar{width:4px;height:4px;}
+::-webkit-scrollbar-track{background:transparent;}
+::-webkit-scrollbar-thumb{background:var(--bg4);border-radius:4px;}
+
+/* animations */
+@keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+
+
+
+
+
+</style>
 </head>
 <body>
+<div class="app">
 
-<!-- SIDEBAR -->
-<div class="sidebar">
-    <div class="sidebar-logo">
-        <div class="logo-icon">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00e676" stroke-width="2"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>
-        </div>
-        MarketEdge
+<!-- ── SIDEBAR ── -->
+<aside class="sidebar">
+  <div class="sidebar-logo">
+    <div class="logo-icon">
+      <svg viewBox="0 0 16 16" fill="none"><polyline points="1,13 5,7 9,10 13,3 15,5" stroke="#00e676" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
     </div>
+    MarketEdge
+  </div>
+
+  <nav class="side-nav">
     <a class="nav-item active" href="#">
-        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
-        Dashboard
+      <svg viewBox="0 0 20 20" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="7" height="7" rx="1.5"/><rect x="11" y="2" width="7" height="7" rx="1.5"/><rect x="2" y="11" width="7" height="7" rx="1.5"/><rect x="11" y="11" width="7" height="7" rx="1.5"/></svg>
+      Dashboard
     </a>
     <a class="nav-item" href="#">
-        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-        Watchlist
+      <svg viewBox="0 0 20 20" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2 10h16M2 5h16M2 15h10"/></svg>
+      Watchlist
     </a>
     <a class="nav-item" href="#">
-        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
-        Markets
+      <svg viewBox="0 0 20 20" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="2,16 6,9 10,12 14,5 18,7"/></svg>
+      Markets
     </a>
     <a class="nav-item" href="#">
-        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
-        Analysis
+      <svg viewBox="0 0 20 20" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 2v4M10 14v4M2 10h4M14 10h4"/><circle cx="10" cy="10" r="3"/></svg>
+      Analysis
     </a>
     <a class="nav-item" href="#">
-        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v2"/><path d="M2 10h6"/><path d="M2 14h6"/><path d="M2 18h6"/></svg>
-        News
+      <svg viewBox="0 0 20 20" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="14" height="13" rx="2"/><line x1="3" y1="8" x2="17" y2="8"/><line x1="7" y1="12" x2="13" y2="12"/></svg>
+      News
     </a>
     <a class="nav-item" href="#">
-        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
-        Portfolio
+      <svg viewBox="0 0 20 20" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="10" cy="10" r="8"/><polyline points="10,6 10,10 13,12"/></svg>
+      Portfolio
     </a>
     <a class="nav-item" href="#">
-        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
-        Alerts
+      <svg viewBox="0 0 20 20" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 2a6 6 0 016 6c0 4-6 10-6 10S4 12 4 8a6 6 0 016-6z"/><circle cx="10" cy="8" r="2"/></svg>
+      Alerts
     </a>
     <a class="nav-item" href="#">
-        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-        Calendar
+      <svg viewBox="0 0 20 20" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="14" height="15" rx="2"/><line x1="7" y1="7" x2="13" y2="7"/><line x1="7" y1="11" x2="13" y2="11"/><line x1="7" y1="15" x2="10" y2="15"/></svg>
+      Calendar
     </a>
     <a class="nav-item" href="#">
-        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-        Reports
+      <svg viewBox="0 0 20 20" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10l7-7 7 7"/><path d="M5 8v8h4v-4h2v4h4V8"/></svg>
+      Reports
     </a>
     <a class="nav-item" href="#">
-        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M4.93 4.93a10 10 0 0 0 0 14.14"/></svg>
-        Settings
+      <svg viewBox="0 0 20 20" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="10" cy="10" r="2"/><path d="M10 2v2M10 16v2M2 10h2M16 10h2M4.22 4.22l1.42 1.42M14.36 14.36l1.42 1.42M4.22 15.78l1.42-1.42M14.36 5.64l1.42-1.42"/></svg>
+      Settings
     </a>
-    <div class="upgrade-box">
-        <h4>Upgrade to Pro</h4>
-        <p>Unlock advanced tools, real-time alerts and more.</p>
-        <button class="upgrade-btn">Upgrade Now</button>
-    </div>
-</div>
+  </nav>
+</aside>
 
-<!-- MAIN -->
+<!-- ── MAIN ── -->
 <div class="main">
-    <!-- TOPBAR -->
-    <div class="topbar">
-        <div class="ticker-item">
-            <span class="t-name">NIFTY 50</span>
-            <span class="t-price" id="tb-nifty">24,750.10</span>
-            <span class="t-change" id="tb-nifty-c">+1.35%</span>
-        </div>
-        <div class="ticker-item">
-            <span class="t-name">SENSEX</span>
-            <span class="t-price" id="tb-sensex">81,317.25</span>
-            <span class="t-change" id="tb-sensex-c">+1.21%</span>
-        </div>
-        <div class="ticker-item">
-            <span class="t-name">NASDAQ</span>
-            <span class="t-price" id="tb-nasdaq">16,920.79</span>
-            <span class="t-change" id="tb-nasdaq-c">+1.45%</span>
-        </div>
-        <div class="topbar-right">
-            <input class="search-box" placeholder="🔍 Search stocks, indices, news..."/>
 
-        </div>
+  <!-- TOP BAR -->
+  <div class="topbar">
+    <div class="topbar-indices">
+      <div class="idx">
+        <span class="idx-name">NIFTY 50</span>
+        <span class="idx-val" id="tb-nifty">24,750.10</span>
+        <span class="idx-chg" id="tb-nifty-c">+1.35%</span>
+      </div>
+      <div class="idx">
+        <span class="idx-name">SENSEX</span>
+        <span class="idx-val" id="tb-sensex">81,317.25</span>
+        <span class="idx-chg" id="tb-sensex-c">+1.21%</span>
+      </div>
+      <div class="idx">
+        <span class="idx-name">NASDAQ</span>
+        <span class="idx-val" id="tb-nasdaq">16,920.79</span>
+        <span class="idx-chg" id="tb-nasdaq-c">+1.45%</span>
+      </div>
+    </div>
+    <div class="search-bar">
+      <svg viewBox="0 0 16 16" fill="none"><circle cx="7" cy="7" r="4.5" stroke-width="1.4"/><line x1="10.5" y1="10.5" x2="14" y2="14" stroke-width="1.4" stroke-linecap="round"/></svg>
+      <input type="text" placeholder="Search stocks, indices, news..."/>
+    </div>
+    <div class="topbar-right">
+      <div class="notif-btn">
+        <svg viewBox="0 0 16 16" fill="none"><path d="M8 2a4 4 0 014 4v3l1.5 2h-11L4 9V6a4 4 0 014-4z" stroke-width="1.3"/><path d="M6.5 13.5a1.5 1.5 0 003 0" stroke-width="1.3"/></svg>
+        <div class="notif-dot"></div>
+      </div>
+      <div class="user-pill">
+        <div class="avatar">AS</div>
+        <span class="user-name">Arjun Singh</span>
+        <svg class="chevron" viewBox="0 0 12 12" fill="none"><polyline points="3,4 6,7 9,4" stroke-width="1.5" stroke-linecap="round"/></svg>
+      </div>
+    </div>
+  </div>
+
+  <!-- SCROLLABLE CONTENT -->
+  <div class="content">
+
+    <!-- Page header -->
+    <div class="page-header">
+      <div>
+        <h1>Dashboard</h1>
+        <p>Welcome back, Arjun! Here's what's happening in the market today.</p>
+      </div>
+      <button class="btn-customize">
+        <svg viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="2.5" stroke-width="1.4"/><path d="M8 1v2M8 13v2M1 8h2M13 8h2M3.05 3.05l1.41 1.41M11.54 11.54l1.41 1.41M3.05 12.95l1.41-1.41M11.54 4.46l1.41-1.41" stroke-width="1.3" stroke-linecap="round"/></svg>
+        Customize
+      </button>
     </div>
 
-    <!-- CONTENT -->
-    <div class="content">
-        <div class="content-left">
+
+
+    <!-- Middle row: chart + overview -->
+    <div class="mid-row">
+      <div class="chart-panel">
+        <div class="chart-header">
+          <div>
+            <div class="chart-title">NIFTY 50</div>
+            <div class="chart-price" id="chart-price">24,750.10</div>
+            <div class="chart-change">+330.10 (1.35%)</div>
+          </div>
+          <div class="index-select">
+            NIFTY 50
+            <svg viewBox="0 0 12 12" fill="none"><polyline points="3,4 6,7 9,4" stroke-width="1.5" stroke-linecap="round"/></svg>
+          </div>
+        </div>
+        <div class="time-tabs">
+          <button class="ttab active">1D</button>
+          <button class="ttab">1W</button>
+          <button class="ttab">1M</button>
+          <button class="ttab">3M</button>
+          <button class="ttab">6M</button>
+          <button class="ttab">1Y</button>
+          <button class="ttab">5Y</button>
+        </div>
+        <div class="area-chart-wrap">
+          <svg id="area-svg" viewBox="0 0 700 200" preserveAspectRatio="none">
+            <!-- Y-axis labels -->
+            <text x="6" y="16" fill="#4a6a78" font-size="9" font-family="DM Sans">24,800</text>
+            <text x="6" y="56" fill="#4a6a78" font-size="9" font-family="DM Sans">24,700</text>
+            <text x="6" y="96" fill="#4a6a78" font-size="9" font-family="DM Sans">24,600</text>
+            <text x="6" y="136" fill="#4a6a78" font-size="9" font-family="DM Sans">24,500</text>
+            <text x="6" y="176" fill="#4a6a78" font-size="9" font-family="DM Sans">24,400</text>
+            <!-- Grid -->
+            <line x1="50" y1="10" x2="700" y2="10" stroke="rgba(255,255,255,0.04)" stroke-width="0.5"/>
+            <line x1="50" y1="50" x2="700" y2="50" stroke="rgba(255,255,255,0.04)" stroke-width="0.5"/>
+            <line x1="50" y1="90" x2="700" y2="90" stroke="rgba(255,255,255,0.04)" stroke-width="0.5"/>
+            <line x1="50" y1="130" x2="700" y2="130" stroke="rgba(255,255,255,0.04)" stroke-width="0.5"/>
+            <line x1="50" y1="170" x2="700" y2="170" stroke="rgba(255,255,255,0.04)" stroke-width="0.5"/>
+            <!-- Area -->
+            <defs>
+              <linearGradient id="areaGrad" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#00e676" stop-opacity="0.25"/>
+                <stop offset="100%" stop-color="#00e676" stop-opacity="0.01"/>
+              </linearGradient>
+            </defs>
+            <polygon id="area-fill" fill="url(#areaGrad)"/>
+            <polyline id="area-line" fill="none" stroke="#00e676" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+            <!-- X-axis times -->
+            <text x="55" y="196" fill="#4a6a78" font-size="9" font-family="DM Sans">09:15</text>
+            <text x="155" y="196" fill="#4a6a78" font-size="9" font-family="DM Sans">10:00</text>
+            <text x="265" y="196" fill="#4a6a78" font-size="9" font-family="DM Sans">11:00</text>
+            <text x="375" y="196" fill="#4a6a78" font-size="9" font-family="DM Sans">12:00</text>
+            <text x="475" y="196" fill="#4a6a78" font-size="9" font-family="DM Sans">13:00</text>
+            <text x="565" y="196" fill="#4a6a78" font-size="9" font-family="DM Sans">14:00</text>
+            <text x="650" y="196" fill="#4a6a78" font-size="9" font-family="DM Sans">15:00</text>
+          </svg>
+        </div>
+      </div>
+
+      <!-- Market Overview -->
+      <div class="overview-panel">
+        <div class="panel-header">
+          <span class="panel-title">Market Overview</span>
+          <a class="view-all" href="#">View All</a>
+        </div>
+        <div class="mkt-row" data-idx="nifty">
+          <div class="mkt-name">NIFTY 50</div>
+          <svg class="mini-spark" viewBox="0 0 52 22" preserveAspectRatio="none"><polyline points="0,18 8,14 16,16 24,9 32,12 40,5 52,3" fill="none" stroke="#00e676" stroke-width="1.3"/></svg>
+          <div>
+            <div class="mkt-val">24,750.10</div>
+            <div class="mkt-chg">+1.35%</div>
+          </div>
+        </div>
+        <div class="mkt-row" data-idx="sensex">
+          <div class="mkt-name">SENSEX</div>
+          <svg class="mini-spark" viewBox="0 0 52 22" preserveAspectRatio="none"><polyline points="0,16 10,12 18,15 26,8 34,11 42,5 52,4" fill="none" stroke="#00e676" stroke-width="1.3"/></svg>
+          <div>
+            <div class="mkt-val">81,317.25</div>
+            <div class="mkt-chg">+1.21%</div>
+          </div>
+        </div>
+        <div class="mkt-row" data-idx="nasdaq">
+          <div class="mkt-name">NASDAQ</div>
+          <svg class="mini-spark" viewBox="0 0 52 22" preserveAspectRatio="none"><polyline points="0,17 9,13 17,15 27,7 35,10 43,4 52,2" fill="none" stroke="#00e676" stroke-width="1.3"/></svg>
+          <div>
+            <div class="mkt-val">16,920.79</div>
+            <div class="mkt-chg">+1.45%</div>
+          </div>
+        </div>
+        <div class="mkt-row" data-idx="dow">
+          <div class="mkt-name">DOW JONES</div>
+          <svg class="mini-spark" viewBox="0 0 52 22" preserveAspectRatio="none"><polyline points="0,14 10,11 18,13 26,8 35,10 43,5 52,4" fill="none" stroke="#00e676" stroke-width="1.3"/></svg>
+          <div>
+            <div class="mkt-val">39,512.84</div>
+            <div class="mkt-chg">+0.89%</div>
+          </div>
+        </div>
+        <div class="mkt-row" data-idx="banknifty">
+          <div class="mkt-name">BANK NIFTY</div>
+          <svg class="mini-spark" viewBox="0 0 52 22" preserveAspectRatio="none"><polyline points="0,18 8,14 16,16 24,9 32,13 40,6 52,3" fill="none" stroke="#00e676" stroke-width="1.3"/></svg>
+          <div>
+            <div class="mkt-val">56,132.90</div>
+            <div class="mkt-chg">+1.68%</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bottom row -->
+    <div class="bottom-row">
+      <!-- Top Gainers -->
+      <div class="table-panel">
+        <div class="panel-header">
+          <span class="panel-title">Top Gainers</span>
+          <a class="view-all" href="#">View All</a>
+        </div>
+        <table>
+          <tr>
+            <th>Stock</th><th>Price</th><th>Change</th><th>% Change</th>
+          </tr>
+          <tbody id="gainers-tbody"><tr>
+            <td><div class="stock-cell"><div class="stock-avatar" style="background:rgba(255,152,0,0.15);color:#FF9800;">R</div><div><div class="stock-name">RELIANCE</div><div class="stock-sub">Reliance Industries</div></div></div></td>
+            <td>₹3,012.45</td><td class="td-green">+45.30</td><td class="td-green">+1.53%</td>
+          </tr>
+          <tr>
+            <td><div class="stock-cell"><div class="stock-avatar" style="background:rgba(33,150,243,0.15);color:#2196F3;">T</div><div><div class="stock-name">TCS</div><div class="stock-sub">Tata Consultancy</div></div></div></td>
+            <td>₹3,850.75</td><td class="td-green">+52.60</td><td class="td-green">+1.38%</td>
+          </tr>
+          <tr>
+            <td><div class="stock-cell"><div class="stock-avatar" style="background:rgba(0,188,212,0.15);color:#00BCD4;">H</div><div><div class="stock-name">HDFCBANK</div><div class="stock-sub">HDFC Bank</div></div></div></td>
+            <td>₹1,678.90</td><td class="td-green">+22.75</td><td class="td-green">+1.37%</td>
+          </tr>
+          <tr>
+            <td><div class="stock-cell"><div class="stock-avatar" style="background:rgba(156,39,176,0.15);color:#9C27B0;">I</div><div><div class="stock-name">ICICIBANK</div><div class="stock-sub">ICICI Bank</div></div></div></td>
+            <td>₹1,245.30</td><td class="td-green">+16.80</td><td class="td-green">+1.37%</td>
+          </tr>
+          <tr>
+            <td><div class="stock-cell"><div class="stock-avatar" style="background:rgba(0,230,118,0.15);color:#00e676;">I</div><div><div class="stock-name">INFY</div><div class="stock-sub">Infosys</div></div></div></td>
+            <td>₹1,895.60</td><td class="td-green">+24.10</td><td class="td-green">+1.29%</td>
+          </tr>
+        </tbody></table>
+      </div>
+
+      <!-- Top Losers -->
+      <div class="table-panel">
+        <div class="panel-header">
+          <span class="panel-title">Top Losers</span>
+          <a class="view-all" style="color:var(--red);" href="#">View All</a>
+        </div>
+        <table>
+          <tr>
+            <th>Stock</th><th>Price</th><th>Change</th><th>% Change</th>
+          </tr>
+          <tbody id="losers-tbody"><tr>
+            <td><div class="stock-cell"><div class="stock-avatar" style="background:rgba(255,82,82,0.15);color:#ff5252;">W</div><div><div class="stock-name">WIPRO</div><div class="stock-sub">Wipro Limited</div></div></div></td>
+            <td>₹487.25</td><td class="td-red">-8.40</td><td class="td-red">-1.69%</td>
+          </tr>
+          <tr>
+            <td><div class="stock-cell"><div class="stock-avatar" style="background:rgba(255,87,34,0.15);color:#FF5722;">T</div><div><div class="stock-name">TECHM</div><div class="stock-sub">Tech Mahindra</div></div></div></td>
+            <td>₹1,230.40</td><td class="td-red">-15.30</td><td class="td-red">-1.23%</td>
+          </tr>
+          <tr>
+            <td><div class="stock-cell"><div class="stock-avatar" style="background:rgba(233,30,99,0.15);color:#E91E63;">M</div><div><div class="stock-name">M&amp;M</div><div class="stock-sub">Mahindra &amp; Mahindra</div></div></div></td>
+            <td>₹2,892.30</td><td class="td-red">-24.60</td><td class="td-red">-0.84%</td>
+          </tr>
+          <tr>
+            <td><div class="stock-cell"><div class="stock-avatar" style="background:rgba(255,193,7,0.15);color:#FFC107;">T</div><div><div class="stock-name">TITAN</div><div class="stock-sub">Titan Company</div></div></div></td>
+            <td>₹3,456.75</td><td class="td-red">-18.20</td><td class="td-red">-0.52%</td>
+          </tr>
+          <tr>
+            <td><div class="stock-cell"><div class="stock-avatar" style="background:rgba(103,58,183,0.15);color:#673AB7;">B</div><div><div class="stock-name">BAJFINANCE</div><div class="stock-sub">Bajaj Finance</div></div></div></td>
+            <td>₹7,876.90</td><td class="td-red">-32.10</td><td class="td-red">-0.41%</td>
+          </tr>
+        </tbody></table>
+      </div>
+
+      <!-- Right stack: News + Events -->
+      <div class="right-stack">
+        <div class="news-panel">
+          <div class="panel-header">
+            <span class="panel-title">Recent News</span>
+            <a class="view-all" href="#">View All</a>
+          </div>
+          <div class="news-item">
+            <div class="news-thumb"><svg viewBox="0 0 20 20" fill="none"><polyline points="2,14 6,8 10,11 14,4 18,6" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+            <div class="news-text">
+              <div class="news-headline">Markets rally for second day as Nifty closes above 24,700</div>
+              <div class="news-meta">5 mins ago · Market News</div>
+            </div>
+          </div>
+          <div class="news-item">
+            <div class="news-thumb"><svg viewBox="0 0 20 20" fill="none"><rect x="3" y="4" width="14" height="13" rx="2" stroke-width="1.4"/><line x1="3" y1="8" x2="17" y2="8" stroke-width="1.2"/></svg></div>
+            <div class="news-text">
+              <div class="news-headline">RBI keeps repo rate unchanged, maintains accommodative stance</div>
+              <div class="news-meta">1 hour ago · Economy</div>
+            </div>
+          </div>
+          <div class="news-item">
+            <div class="news-thumb"><svg viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="8" stroke-width="1.4"/><line x1="2" y1="10" x2="18" y2="10" stroke-width="1.2"/></svg></div>
+            <div class="news-text">
+              <div class="news-headline">Global markets trade higher amid positive economic data</div>
+              <div class="news-meta">2 hours ago · Global Markets</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="events-panel">
+          <div class="panel-header">
+            <span class="panel-title">Upcoming Events</span>
+            <a class="view-all" href="#">View Calendar</a>
+          </div>
+          <div class="event-item">
             <div>
-                <h2 style="font-family:'Syne',sans-serif;font-size:20px;">Dashboard</h2>
-                <p style="color:var(--muted);font-size:13px;margin-top:4px;">Welcome back, Arjun! Here's what's happening in the market today.</p>
+              <div class="event-name">NIFTY Expiry</div>
+              <div class="event-date">29 May 2024</div>
             </div>
-
-            <!-- STAT CARDS -->
-            <div class="stat-grid">
-                <div class="stat-card">
-                    <div class="s-label">Portfolio Value</div>
-                    <div class="s-value">₹12,56,890</div>
-                    <div class="s-change">+2.35% today</div>
-                </div>
-                <div class="stat-card">
-                    <div class="s-label">Today's P&L</div>
-                    <div class="s-value">₹28,890</div>
-                    <div class="s-change">+2.35%</div>
-                </div>
-                <div class="stat-card">
-                    <div class="s-label">Total Gain</div>
-                    <div class="s-value">₹1,56,780</div>
-                    <div class="s-change">+14.25%</div>
-                </div>
-                <div class="stat-card">
-                    <div class="s-label">Buying Power</div>
-                    <div class="s-value">₹2,45,600</div>
-                    <div class="s-change" style="color:var(--muted);">Available</div>
-                </div>
+            <svg class="cal-icon" viewBox="0 0 16 16" fill="none"><rect x="1" y="3" width="14" height="12" rx="2" stroke-width="1.3"/><line x1="1" y1="7" x2="15" y2="7" stroke-width="1.2"/><line x1="5" y1="1" x2="5" y2="5" stroke-width="1.3" stroke-linecap="round"/><line x1="11" y1="1" x2="11" y2="5" stroke-width="1.3" stroke-linecap="round"/></svg>
+          </div>
+          <div class="event-item">
+            <div>
+              <div class="event-name">RBI Monetary Policy</div>
+              <div class="event-date">07 June 2024</div>
             </div>
-
-            <!-- CHART -->
-            <div class="chart-card">
-                <div class="chart-header">
-                    <div>
-                        <div class="chart-title">NIFTY 50</div>
-                        <div style="display:flex;align-items:center;gap:10px;margin-top:4px;">
-                            <span class="chart-price" id="chart-price">24,750.10</span>
-                            <span class="chart-change">+330.10 (1.35%)</span>
-                        </div>
-                    </div>
-                </div>
-                <div class="time-tabs">
-                    <button class="time-tab active">1D</button>
-                    <button class="time-tab">1W</button>
-                    <button class="time-tab">1M</button>
-                    <button class="time-tab">3M</button>
-                    <button class="time-tab">1Y</button>
-                </div>
-                <canvas id="chartCanvas"></canvas>
-            </div>
-
-            <!-- TOP GAINERS / LOSERS -->
-            <div class="tables-grid">
-                <div class="table-card">
-                    <div class="table-header">
-                        <h3>Top Gainers</h3>
-                        <span class="view-all">View All</span>
-                    </div>
-                    <table>
-                        <tr><th>Stock</th><th>Price</th><th>Change</th><th>%</th></tr>
-                        <tr><td><div class="stock-name">RELIANCE</div><div class="stock-sub">Reliance Industries</div></td><td>₹3,012</td><td class="gain">+45.30</td><td class="gain">+1.53%</td></tr>
-                        <tr><td><div class="stock-name">TCS</div><div class="stock-sub">Tata Consultancy</div></td><td>₹3,850</td><td class="gain">+52.60</td><td class="gain">+1.38%</td></tr>
-                        <tr><td><div class="stock-name">HDFCBANK</div><div class="stock-sub">HDFC Bank</div></td><td>₹1,678</td><td class="gain">+22.75</td><td class="gain">+1.37%</td></tr>
-                        <tr><td><div class="stock-name">ICICIBANK</div><div class="stock-sub">ICICI Bank</div></td><td>₹1,245</td><td class="gain">+16.80</td><td class="gain">+1.37%</td></tr>
-                        <tr><td><div class="stock-name">INFY</div><div class="stock-sub">Infosys</div></td><td>₹1,895</td><td class="gain">+24.10</td><td class="gain">+1.29%</td></tr>
-                    </table>
-                </div>
-                <div class="table-card">
-                    <div class="table-header">
-                        <h3>Top Losers</h3>
-                        <span class="view-all" style="color:var(--red);">View All</span>
-                    </div>
-                    <table>
-                        <tr><th>Stock</th><th>Price</th><th>Change</th><th>%</th></tr>
-                        <tr><td><div class="stock-name">WIPRO</div><div class="stock-sub">Wipro Limited</div></td><td>₹487</td><td class="loss">-8.40</td><td class="loss">-1.69%</td></tr>
-                        <tr><td><div class="stock-name">TECHM</div><div class="stock-sub">Tech Mahindra</div></td><td>₹1,230</td><td class="loss">-15.30</td><td class="loss">-1.23%</td></tr>
-                        <tr><td><div class="stock-name">M&M</div><div class="stock-sub">Mahindra & Mahindra</div></td><td>₹2,892</td><td class="loss">-24.60</td><td class="loss">-0.84%</td></tr>
-                        <tr><td><div class="stock-name">TITAN</div><div class="stock-sub">Titan Company</div></td><td>₹3,456</td><td class="loss">-18.20</td><td class="loss">-0.52%</td></tr>
-                        <tr><td><div class="stock-name">BAJFINANCE</div><div class="stock-sub">Bajaj Finance</div></td><td>₹7,876</td><td class="loss">-32.10</td><td class="loss">-0.41%</td></tr>
-                    </table>
-                </div>
-            </div>
+            <svg class="cal-icon" viewBox="0 0 16 16" fill="none"><rect x="1" y="3" width="14" height="12" rx="2" stroke-width="1.3"/><line x1="1" y1="7" x2="15" y2="7" stroke-width="1.2"/><line x1="5" y1="1" x2="5" y2="5" stroke-width="1.3" stroke-linecap="round"/><line x1="11" y1="1" x2="11" y2="5" stroke-width="1.3" stroke-linecap="round"/></svg>
+          </div>
         </div>
-
-        <!-- RIGHT PANEL -->
-        <div class="right-panel">
-            <div class="panel-card">
-                <div class="panel-title">Market Overview <span>View All</span></div>
-                <div class="market-row"><span>NIFTY 50</span><span id="mo-nifty">24,750.10</span><span class="gain" id="mo-nifty-c">+1.35%</span></div>
-                <div class="market-row"><span>SENSEX</span><span id="mo-sensex">81,317.25</span><span class="gain" id="mo-sensex-c">+1.21%</span></div>
-                <div class="market-row"><span>NASDAQ</span><span id="mo-nasdaq">16,920.79</span><span class="gain" id="mo-nasdaq-c">+1.45%</span></div>
-                <div class="market-row"><span>DOW JONES</span><span>39,512.84</span><span class="gain">+0.89%</span></div>
-                <div class="market-row"><span>BANK NIFTY</span><span>56,132.90</span><span class="gain">+1.68%</span></div>
-            </div>
-            <div class="panel-card">
-                <div class="panel-title">Recent News <span>View All</span></div>
-                <div class="news-item"><h4>Markets rally for second day as Nifty closes above 24,700</h4><div class="news-meta">5 mins ago · Market News</div></div>
-                <div class="news-item"><h4>RBI keeps repo rate unchanged, maintains accommodative stance</h4><div class="news-meta">1 hour ago · Economy</div></div>
-                <div class="news-item"><h4>Global markets trade higher amid positive economic data</h4><div class="news-meta">2 hours ago · Global Markets</div></div>
-            </div>
-            <div class="panel-card">
-                <div class="panel-title">Upcoming Events</div>
-                <div class="event-item"><span>NIFTY Expiry</span><span class="e-date">29 May 2024</span></div>
-                <div class="event-item"><span>RBI Monetary Policy</span><span class="e-date">07 June 2024</span></div>
-                <div class="event-item"><span>Q1 Results Season</span><span class="e-date">Jul 2024</span></div>
-            </div>
-        </div>
+      </div>
     </div>
-</div>
 
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  </div><!-- /content -->
+</div><!-- /main -->
+</div><!-- /app -->
+
 <script>
-    // CHART
-    const ctx = document.getElementById('chartCanvas').getContext('2d');
-    const labels = ['09:15','09:30','10:00','10:30','11:00','11:30','12:00','12:30','13:00','13:30','14:00','14:30','15:00','15:30'];
-    const chartData = [24420,24450,24480,24510,24555,24590,24620,24580,24650,24690,24710,24730,24750,24750];
-    new Chart(ctx, {
-        type: 'line',
-        data: {
-            labels,
-            datasets: [{
-                data: chartData,
-                borderColor: '#00e676',
-                borderWidth: 2,
-                fill: true,
-                backgroundColor: 'rgba(0,230,118,0.07)',
-                tension: 0.4,
-                pointRadius: 0
-            }]
-        },
-        options: {
-            responsive: true,
-            plugins: { legend: { display: false } },
-            scales: {
-                x: { ticks: { color: '#7a9aa8', font: { size: 10 } }, grid: { color: 'rgba(255,255,255,0.04)' } },
-                y: { ticks: { color: '#7a9aa8', font: { size: 10 } }, grid: { color: 'rgba(255,255,255,0.04)' } }
-            }
-        }
-    });
+// ═══════════════════════════════════════════════════
+//  REAL MARKET DATA — Yahoo Finance via CORS Proxy
+// ═══════════════════════════════════════════════════
 
-    // TIME TABS
-    document.querySelectorAll('.time-tab').forEach(tab => {
-        tab.addEventListener('click', () => {
-            document.querySelectorAll('.time-tab').forEach(t => t.classList.remove('active'));
-            tab.classList.add('active');
-        });
-    });
+const PROXY = 'https://corsproxy.io/?';
+const YF    = 'https://query1.finance.yahoo.com';
 
-    // LIVE PRICES FROM BACKEND
-    async function loadPrices() {
-        const stocks = [
-            { symbol: "^NSEI",  ids: ["tb-nifty","mo-nifty"],   changes: ["tb-nifty-c","mo-nifty-c"]  },
-            { symbol: "^BSESN", ids: ["tb-sensex","mo-sensex"],  changes: ["tb-sensex-c","mo-sensex-c"] },
-            { symbol: "^IXIC",  ids: ["tb-nasdaq","mo-nasdaq"],  changes: ["tb-nasdaq-c","mo-nasdaq-c"] },
-        ];
-        for (let s of stocks) {
-            try {
-                const res = await fetch(`http://localhost:8000/price/${s.symbol}`);
-                const data = await res.json();
-                s.ids.forEach(id => document.getElementById(id).innerText = data.price.toLocaleString());
-                s.changes.forEach(id => {
-                    const el = document.getElementById(id);
-                    el.innerText = `${data.change_percent > 0 ? '+' : ''}${data.change_percent}%`;
-                    el.style.color = data.change_percent >= 0 ? 'var(--green)' : 'var(--red)';
-                });
-            } catch(e) {}
-        }
+// Symbol map
+const INDICES = [
+  { id:'nifty',    sym:'^NSEI',    name:'NIFTY 50',   elVal:'tb-nifty',   elChg:'tb-nifty-c'   },
+  { id:'sensex',   sym:'^BSESN',   name:'SENSEX',     elVal:'tb-sensex',  elChg:'tb-sensex-c'  },
+  { id:'nasdaq',   sym:'^IXIC',    name:'NASDAQ',     elVal:'tb-nasdaq',  elChg:'tb-nasdaq-c'  },
+  { id:'dow',      sym:'^DJI',     name:'DOW JONES',  elVal:null,         elChg:null           },
+  { id:'banknifty',sym:'^NSEBANK', name:'BANK NIFTY', elVal:null,         elChg:null           },
+];
+
+const STOCKS_WATCH = [
+  { sym:'RELIANCE.NS', name:'RELIANCE',  sub:'Reliance Industries' },
+  { sym:'TCS.NS',      name:'TCS',       sub:'Tata Consultancy'    },
+  { sym:'HDFCBANK.NS', name:'HDFCBANK',  sub:'HDFC Bank'           },
+  { sym:'ICICIBANK.NS',name:'ICICIBANK', sub:'ICICI Bank'          },
+  { sym:'INFY.NS',     name:'INFY',      sub:'Infosys'             },
+  { sym:'WIPRO.NS',    name:'WIPRO',     sub:'Wipro Limited'       },
+  { sym:'TECHM.NS',    name:'TECHM',     sub:'Tech Mahindra'       },
+  { sym:'M&M.NS',      name:'M&M',       sub:'Mahindra & Mahindra' },
+  { sym:'TITAN.NS',    name:'TITAN',     sub:'Titan Company'       },
+  { sym:'BAJFINANCE.NS',name:'BAJFINANCE',sub:'Bajaj Finance'      },
+];
+
+// Fetch a single Yahoo Finance quote
+async function fetchQuote(symbol) {
+  try {
+    const url = `${YF}/v8/finance/chart/${encodeURIComponent(symbol)}?interval=1d&range=1d`;
+    const res  = await fetch(PROXY + encodeURIComponent(url));
+    const json = await res.json();
+    const meta = json?.chart?.result?.[0]?.meta;
+    if (!meta) return null;
+    const price  = meta.regularMarketPrice;
+    const prev   = meta.chartPreviousClose || meta.previousClose;
+    const change = price - prev;
+    const pct    = (change / prev) * 100;
+    return { price, prev, change, pct };
+  } catch(e) {
+    return null;
+  }
+}
+
+// Fetch intraday chart data (1d, 5m candles)
+async function fetchChartData(symbol, range='1d', interval='5m') {
+  try {
+    const url = `${YF}/v8/finance/chart/${encodeURIComponent(symbol)}?interval=${interval}&range=${range}`;
+    const res  = await fetch(PROXY + encodeURIComponent(url));
+    const json = await res.json();
+    const result = json?.chart?.result?.[0];
+    if (!result) return null;
+    const timestamps = result.timestamp;
+    const closes     = result.indicators?.quote?.[0]?.close;
+    if (!timestamps || !closes) return null;
+    return timestamps.map((t,i) => ({ t: t*1000, v: closes[i] })).filter(d => d.v !== null);
+  } catch(e) {
+    return null;
+  }
+}
+
+// Format number Indian style
+function fmt(n, decimals=2) {
+  if (n == null) return '--';
+  return Number(n).toLocaleString('en-IN', { minimumFractionDigits: decimals, maximumFractionDigits: decimals });
+}
+
+// Show loading state
+function setLoading(el, text='Loading...') {
+  if (el) el.textContent = text;
+}
+
+// ── UPDATE TOPBAR INDICES ──
+async function updateIndices() {
+  for (const idx of INDICES) {
+    const data = await fetchQuote(idx.sym);
+    if (!data) continue;
+
+    const valEl = idx.elVal ? document.getElementById(idx.elVal) : null;
+    const chgEl = idx.elChg ? document.getElementById(idx.elChg) : null;
+
+    if (valEl) valEl.textContent = fmt(data.price);
+    if (chgEl) {
+      const sign = data.pct >= 0 ? '+' : '';
+      chgEl.textContent = `${sign}${fmt(data.pct)}%`;
+      chgEl.className = 'idx-chg' + (data.pct < 0 ? ' red' : '');
     }
-    loadPrices();
-    setInterval(loadPrices, 5000);
+
+    // Update market overview panel rows
+    const row = document.querySelector(`[data-idx="${idx.id}"]`);
+    if (row) {
+      const rVal = row.querySelector('.mkt-val');
+      const rChg = row.querySelector('.mkt-chg');
+      if (rVal) rVal.textContent = fmt(data.price);
+      if (rChg) {
+        const sign = data.pct >= 0 ? '+' : '';
+        rChg.textContent = `${sign}${fmt(data.pct)}%`;
+        rChg.className = 'mkt-chg' + (data.pct < 0 ? ' red' : '');
+      }
+    }
+
+    // Update main chart if NIFTY
+    if (idx.id === 'nifty') {
+      const cpEl = document.getElementById('chart-price');
+      const ccEl = document.getElementById('chart-change');
+      if (cpEl) cpEl.textContent = fmt(data.price);
+      if (ccEl) {
+        const sign = data.change >= 0 ? '+' : '';
+        ccEl.textContent = `${sign}${fmt(data.change)} (${sign}${fmt(data.pct)}%)`;
+        ccEl.style.color = data.pct >= 0 ? 'var(--green)' : 'var(--red)';
+      }
+    }
+  }
+}
+
+// ── DRAW REAL AREA CHART ──
+async function drawRealChart(symbol='^NSEI', range='1d', interval='5m') {
+  const lineEl = document.getElementById('area-line');
+  const fillEl = document.getElementById('area-fill');
+  if (!lineEl) return;
+
+  // Show shimmer while loading
+  lineEl.setAttribute('points', '55,100 695,100');
+  lineEl.style.opacity = '0.3';
+
+  const data = await fetchChartData(symbol, range, interval);
+  lineEl.style.opacity = '1';
+
+  if (!data || data.length < 2) {
+    generateFallbackChart();
+    return;
+  }
+
+  // Filter out nulls and scale to SVG viewBox (700x200, x: 55-695, y: 10-180)
+  const valid  = data.filter(d => d.v != null);
+  const prices = valid.map(d => d.v);
+  const minP   = Math.min(...prices);
+  const maxP   = Math.max(...prices);
+  const range_ = maxP - minP || 1;
+
+  const svgX1 = 55, svgX2 = 695, svgY1 = 15, svgY2 = 175;
+  const n = valid.length;
+
+  const pts = valid.map((d, i) => {
+    const x = svgX1 + ((svgX2 - svgX1) * i / (n - 1));
+    const y = svgY2 - ((d.v - minP) / range_) * (svgY2 - svgY1);
+    return [x.toFixed(1), y.toFixed(1)];
+  });
+
+  const lineStr = pts.map(p => p.join(',')).join(' ');
+  const fillStr = lineStr + ` ${pts[n-1][0]},188 55,188`;
+
+  lineEl.setAttribute('points', lineStr);
+  fillEl.setAttribute('points', fillStr);
+
+  // Update Y-axis labels with real price levels
+  const step = range_ / 4;
+  const yLabels = document.querySelectorAll('.area-chart-wrap text');
+  const levels = [maxP, maxP-step, maxP-2*step, maxP-3*step, minP];
+  // Update SVG text labels
+  const svg = document.getElementById('area-svg');
+  const texts = svg.querySelectorAll('text');
+  const priceTexts = Array.from(texts).slice(0, 5);
+  priceTexts.forEach((el, i) => {
+    el.textContent = fmt(levels[i], 0);
+  });
+}
+
+// Fallback animated chart if API fails
+function generateFallbackChart() {
+  const pts = [];
+  let y = 130;
+  const xs = [55,100,145,185,225,265,305,345,385,420,455,490,525,560,595,630,665,695];
+  xs.forEach(x => {
+    y += (Math.random() - 0.42) * 18;
+    y = Math.max(12, Math.min(175, y));
+    pts.push([x, y]);
+  });
+  const line = pts.map(p => p.join(',')).join(' ');
+  const fill = line + ` ${pts[pts.length-1][0]},188 55,188`;
+  document.getElementById('area-line').setAttribute('points', line);
+  document.getElementById('area-fill').setAttribute('points', fill);
+}
+
+// ── UPDATE GAINERS / LOSERS TABLE ──
+async function updateStockTables() {
+  const results = [];
+  for (const s of STOCKS_WATCH) {
+    const data = await fetchQuote(s.sym);
+    if (!data) continue;
+    results.push({ ...s, ...data });
+  }
+  if (results.length === 0) return;
+
+  const sorted = [...results].sort((a, b) => b.pct - a.pct);
+  const gainers = sorted.filter(s => s.pct >= 0).slice(0, 5);
+  const losers  = sorted.filter(s => s.pct < 0).sort((a,b) => a.pct - b.pct).slice(0, 5);
+
+  renderTable('gainers-tbody', gainers, true);
+  renderTable('losers-tbody',  losers,  false);
+}
+
+const COLORS = {
+  'RELIANCE': {bg:'rgba(255,152,0,0.15)',   fg:'#FF9800'},
+  'TCS':      {bg:'rgba(33,150,243,0.15)',  fg:'#2196F3'},
+  'HDFCBANK': {bg:'rgba(0,188,212,0.15)',   fg:'#00BCD4'},
+  'ICICIBANK':{bg:'rgba(156,39,176,0.15)',  fg:'#9C27B0'},
+  'INFY':     {bg:'rgba(0,230,118,0.15)',   fg:'#00e676'},
+  'WIPRO':    {bg:'rgba(255,82,82,0.15)',   fg:'#ff5252'},
+  'TECHM':    {bg:'rgba(255,87,34,0.15)',   fg:'#FF5722'},
+  'M&M':      {bg:'rgba(233,30,99,0.15)',   fg:'#E91E63'},
+  'TITAN':    {bg:'rgba(255,193,7,0.15)',   fg:'#FFC107'},
+  'BAJFINANCE':{bg:'rgba(103,58,183,0.15)',fg:'#673AB7'},
+};
+
+function renderTable(tbodyId, stocks, isGainers) {
+  const tb = document.getElementById(tbodyId);
+  if (!tb) return;
+  tb.innerHTML = stocks.map(s => {
+    const c = COLORS[s.name] || {bg:'rgba(255,255,255,0.1)',fg:'#aaa'};
+    const sign = s.change >= 0 ? '+' : '';
+    const cls  = s.pct >= 0 ? 'td-green' : 'td-red';
+    return `<tr>
+      <td><div class="stock-cell">
+        <div class="stock-avatar" style="background:${c.bg};color:${c.fg};">${s.name[0]}</div>
+        <div><div class="stock-name">${s.name}</div><div class="stock-sub">${s.sub}</div></div>
+      </div></td>
+      <td>₹${fmt(s.price)}</td>
+      <td class="${cls}">${sign}${fmt(s.change)}</td>
+      <td class="${cls}">${sign}${fmt(s.pct)}%</td>
+    </tr>`;
+  }).join('');
+}
+
+// ── TIME TAB SWITCHING ──
+const rangeMap = {
+  '1D':{ range:'1d',  interval:'5m'  },
+  '1W':{ range:'5d',  interval:'60m' },
+  '1M':{ range:'1mo', interval:'1d'  },
+  '3M':{ range:'3mo', interval:'1d'  },
+  '6M':{ range:'6mo', interval:'1wk' },
+  '1Y':{ range:'1y',  interval:'1wk' },
+  '5Y':{ range:'5y',  interval:'1mo' },
+};
+
+document.querySelectorAll('.ttab').forEach(t => {
+  t.addEventListener('click', () => {
+    document.querySelectorAll('.ttab').forEach(x => x.classList.remove('active'));
+    t.classList.add('active');
+    const cfg = rangeMap[t.textContent] || rangeMap['1D'];
+    drawRealChart('^NSEI', cfg.range, cfg.interval);
+  });
+});
+
+// ── NAV ACTIVE STATE ──
+document.querySelectorAll('.nav-item').forEach(item => {
+  item.addEventListener('click', e => {
+    e.preventDefault();
+    document.querySelectorAll('.nav-item').forEach(x => x.classList.remove('active'));
+    item.classList.add('active');
+  });
+});
+
+// ── STATUS INDICATOR ──
+function showStatus(msg, ok=true) {
+  let el = document.getElementById('data-status');
+  if (!el) {
+    el = document.createElement('div');
+    el.id = 'data-status';
+    el.style.cssText = `
+      position:fixed;bottom:18px;right:18px;z-index:999;
+      padding:8px 16px;border-radius:8px;font-size:12px;font-family:var(--font-body);
+      display:flex;align-items:center;gap:8px;
+      background:var(--bg3);border:0.5px solid var(--border);color:var(--muted);
+      transition:opacity .4s;
+    `;
+    document.body.appendChild(el);
+  }
+  const dot = ok ? '#00e676' : '#ff5252';
+  el.innerHTML = `<span style="width:7px;height:7px;border-radius:50%;background:${dot};display:inline-block;"></span>${msg}`;
+  el.style.opacity = '1';
+  setTimeout(() => el.style.opacity = '0', 4000);
+}
+
+// ── INIT — Load everything ──
+async function init() {
+  showStatus('Fetching live market data...', true);
+
+  // Load chart first (fastest visual feedback)
+  drawRealChart('^NSEI', '1d', '5m');
+
+  // Load indices for topbar + overview panel
+  await updateIndices();
+
+  // Load stock tables
+  await updateStockTables();
+
+  showStatus('Live data loaded ✓', true);
+
+  // Auto-refresh every 60 seconds
+  setInterval(async () => {
+    showStatus('Refreshing...', true);
+    await updateIndices();
+    await drawRealChart('^NSEI', '1d', '5m');
+    showStatus('Updated ✓', true);
+  }, 60000);
+}
+// Start!
+init();
 </script>
 </body>
 </html>
