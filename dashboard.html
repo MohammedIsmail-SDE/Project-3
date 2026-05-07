@@ -94,32 +94,6 @@ nav.side-nav{flex:1;padding:16px 10px;}
 .search-bar svg{stroke:var(--muted2);width:14px;height:14px;flex-shrink:0;}
 
 .topbar-right{display:flex;align-items:center;gap:14px;}
-.notif-btn{
-  width:34px;height:34px;border-radius:8px;
-  background:var(--bg3);border:0.5px solid var(--border);
-  display:flex;align-items:center;justify-content:center;cursor:pointer;
-  position:relative;
-}
-.notif-btn svg{stroke:var(--muted);width:16px;height:16px;}
-.notif-dot{
-  position:absolute;top:6px;right:7px;
-  width:6px;height:6px;border-radius:50%;
-  background:var(--green);border:1.5px solid var(--bg2);
-}
-.user-pill{
-  display:flex;align-items:center;gap:8px;
-  background:var(--bg3);border:0.5px solid var(--border);
-  border-radius:8px;padding:5px 10px 5px 5px;cursor:pointer;
-}
-.avatar{
-  width:26px;height:26px;border-radius:6px;
-  background:var(--green-glow);border:1px solid var(--green);
-  display:flex;align-items:center;justify-content:center;
-  font-size:10px;font-weight:700;color:var(--green);
-  font-family:var(--font-head);
-}
-.user-name{font-size:12.5px;font-weight:500;}
-.chevron{stroke:var(--muted);width:12px;height:12px;}
 
 /* ── CONTENT ── */
 .content{flex:1;overflow-y:auto;padding:1.5rem;display:flex;flex-direction:column;gap:1.25rem;}
@@ -343,15 +317,8 @@ nav.side-nav{flex:1;padding:16px 10px;}
       <input type="text" placeholder="Search stocks, indices, news..."/>
     </div>
     <div class="topbar-right">
-      <div class="notif-btn">
-        <svg viewBox="0 0 16 16" fill="none"><path d="M8 2a4 4 0 014 4v3l1.5 2h-11L4 9V6a4 4 0 014-4z" stroke-width="1.3"/><path d="M6.5 13.5a1.5 1.5 0 003 0" stroke-width="1.3"/></svg>
-        <div class="notif-dot"></div>
-      </div>
-      <div class="user-pill">
-        <div class="avatar">AS</div>
-        <span class="user-name">Arjun Singh</span>
-        <svg class="chevron" viewBox="0 0 12 12" fill="none"><polyline points="3,4 6,7 9,4" stroke-width="1.5" stroke-linecap="round"/></svg>
-      </div>
+
+
     </div>
   </div>
 
