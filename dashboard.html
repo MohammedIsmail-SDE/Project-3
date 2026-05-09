@@ -81,13 +81,9 @@ nav.side-nav{flex:1;padding:16px 10px;}
 .page-header{display:flex;align-items:flex-start;justify-content:space-between;}
 .page-header h1{font-family:var(--font-head);font-size:22px;font-weight:700;}
 .page-header p{font-size:13px;color:var(--muted);margin-top:3px;}
-.btn-customize{
-  display:flex;align-items:center;gap:7px;padding:8px 16px;border-radius:8px;
-  background:var(--bg3);border:0.5px solid var(--border);color:var(--text);
-  font-size:13px;cursor:pointer;transition:border-color .15s;
-}
-.btn-customize:hover{border-color:var(--muted);}
-.btn-customize svg{stroke:var(--text);width:14px;height:14px;}
+
+
+
 
 /* middle row */
 .mid-row{display:grid;grid-template-columns:1fr 300px;gap:1rem;}
@@ -341,10 +337,6 @@ input[type=range]::-webkit-slider-thumb:hover{transform:scale(1.2);}
         <h1>Dashboard</h1>
         <p>Welcome back! Here's what's happening in the market today.</p>
       </div>
-      <button class="btn-customize">
-        <svg viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="2.5" stroke-width="1.4"/><path d="M8 1v2M8 13v2M1 8h2M13 8h2M3.05 3.05l1.41 1.41M11.54 11.54l1.41 1.41M3.05 12.95l1.41-1.41M11.54 4.46l1.41-1.41" stroke-width="1.3" stroke-linecap="round"/></svg>
-        Customize
-      </button>
     </div>
 
     <!-- Chart + Overview -->
@@ -482,6 +474,8 @@ input[type=range]::-webkit-slider-thumb:hover{transform:scale(1.2);}
           <input type="range" id="sl-years" min="1" max="40" step="1" value="10" oninput="calcRun()"/>
           <div class="s-minmax"><span>1 Yr</span><span>40 Yr</span></div>
         </div>
+
+        <button class="invest-btn" style="margin-top:auto;">INVEST NOW</button>
       </div>
 
       <!-- RIGHT: Results -->
