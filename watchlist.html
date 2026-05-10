@@ -1,0 +1,666 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>MarketEdge — Watchlist </title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --bg:#060d10;--bg2:#0b1418;--bg3:#0f1d22;--bg4:#111e24;
+  --green:#00e676;--green-dim:#00c85a;--green-glow:rgba(0,230,118,0.13);--green-glow2:rgba(0,230,118,0.07);
+  --red:#ff5252;--blue:#3b82f6;
+  --text:#e8f0f2;--muted:#7a9aa8;--muted2:#4a6a78;
+  --border:rgba(255,255,255,0.06);--border-green:rgba(0,230,118,0.15);
+  --sidebar:210px;
+  --font-head:'Syne',sans-serif;--font-body:'DM Sans',sans-serif;
+}
+html,body{height:100%;font-family:var(--font-body);background:var(--bg);color:var(--text);overflow-x:hidden;}
+.app{display:flex;height:100vh;overflow:hidden;}
+
+/* ── SIDEBAR ── */
+.sidebar{width:var(--sidebar);min-width:var(--sidebar);background:var(--bg2);border-right:0.5px solid var(--border);display:flex;flex-direction:column;z-index:10;}
+.sidebar-logo{display:flex;align-items:center;gap:10px;padding:20px 20px 24px;font-family:var(--font-head);font-weight:700;font-size:16px;border-bottom:0.5px solid var(--border);text-decoration:none;color:var(--text);}
+.logo-icon{width:30px;height:30px;background:var(--green-glow);border:1px solid var(--green);border-radius:7px;display:flex;align-items:center;justify-content:center;}
+.logo-icon svg{width:16px;height:16px;}
+nav.side-nav{flex:1;padding:16px 10px;overflow-y:auto;}
+.nav-item{display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:9px;font-size:13.5px;color:var(--muted);cursor:pointer;transition:all .15s;margin-bottom:2px;text-decoration:none;}
+.nav-item svg{width:17px;height:17px;stroke:currentColor;flex-shrink:0;}
+.nav-item:hover{background:rgba(255,255,255,0.04);color:var(--text);}
+.nav-item.active{background:var(--green-glow);color:var(--green);}
+.nav-item.active svg{stroke:var(--green);}
+
+/* ── MAIN ── */
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden;min-width:0;}
+
+/* ── TOPBAR ── */
+.topbar{height:52px;background:var(--bg2);border-bottom:0.5px solid var(--border);display:flex;align-items:center;padding:0 1.5rem;gap:2rem;flex-shrink:0;}
+.topbar-indices{display:flex;gap:2rem;flex:1;}
+.idx{display:flex;align-items:baseline;gap:8px;}
+.idx-name{font-size:11px;color:var(--muted);letter-spacing:0.06em;}
+.idx-val{font-family:var(--font-head);font-size:14px;font-weight:600;color:var(--text);}
+.idx-chg{font-size:12px;font-weight:500;color:var(--green);}
+.idx-chg.red{color:var(--red);}
+.search-bar{display:flex;align-items:center;gap:8px;background:var(--bg3);border:0.5px solid var(--border);border-radius:8px;padding:7px 14px;min-width:220px;}
+.search-bar input{background:none;border:none;outline:none;color:var(--text);font-size:13px;font-family:var(--font-body);width:100%;}
+.search-bar input::placeholder{color:var(--muted2);}
+.search-bar svg{stroke:var(--muted2);width:14px;height:14px;flex-shrink:0;}
+
+/* ── CONTENT ── */
+.content{flex:1;overflow-y:auto;padding:1.5rem;display:flex;flex-direction:column;gap:1.25rem;}
+
+/* ── PAGE HEADER ── */
+.page-header{display:flex;align-items:center;justify-content:space-between;}
+.page-header h1{font-family:var(--font-head);font-size:22px;font-weight:700;}
+.page-header p{font-size:13px;color:var(--muted);margin-top:3px;}
+.btn-add{display:flex;align-items:center;gap:8px;padding:10px 20px;background:var(--green);color:#060d10;border:none;border-radius:9px;font-family:var(--font-head);font-size:14px;font-weight:700;cursor:pointer;transition:all .2s;}
+.btn-add:hover{background:var(--green-dim);transform:translateY(-1px);}
+.btn-add svg{stroke:#060d10;width:16px;height:16px;}
+
+/* ── SUMMARY STATS ── */
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;}
+.stat-box{background:var(--bg2);border:0.5px solid var(--border);border-radius:12px;padding:18px 20px;transition:border-color .2s;}
+.stat-box:hover{border-color:var(--border-green);}
+.stat-box-label{font-size:12px;color:var(--muted);margin-bottom:8px;}
+.stat-box-val{font-family:var(--font-head);font-size:20px;font-weight:700;}
+.stat-box-sub{font-size:12px;margin-top:4px;}
+.up{color:var(--green);}
+.down{color:var(--red);}
+
+/* ── ADD STOCK MODAL ── */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:200;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(4px);opacity:0;pointer-events:none;transition:opacity .2s;}
+.modal-overlay.show{opacity:1;pointer-events:all;}
+.modal{background:var(--bg2);border:0.5px solid var(--border-green);border-radius:16px;padding:2rem;width:440px;max-width:90vw;transform:translateY(20px);transition:transform .2s;}
+.modal-overlay.show .modal{transform:translateY(0);}
+.modal-title{font-family:var(--font-head);font-size:18px;font-weight:700;margin-bottom:1.5rem;}
+.modal-close{float:right;background:none;border:none;color:var(--muted);font-size:20px;cursor:pointer;margin-top:-4px;}
+.modal-close:hover{color:var(--text);}
+.search-stock-input{width:100%;background:var(--bg3);border:0.5px solid var(--border);border-radius:10px;padding:12px 16px;color:var(--text);font-size:14px;font-family:var(--font-body);outline:none;margin-bottom:1rem;transition:border-color .15s;}
+.search-stock-input:focus{border-color:var(--green);}
+.search-stock-input::placeholder{color:var(--muted2);}
+.stock-suggestions{display:flex;flex-direction:column;gap:4px;max-height:280px;overflow-y:auto;}
+.suggestion-item{display:flex;align-items:center;justify-content:space-between;padding:12px 14px;border-radius:9px;background:var(--bg3);border:0.5px solid var(--border);cursor:pointer;transition:all .15s;}
+.suggestion-item:hover{border-color:var(--green);background:var(--green-glow2);}
+.sug-left{display:flex;align-items:center;gap:10px;}
+.sug-avatar{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0;}
+.sug-name{font-weight:600;font-size:14px;}
+.sug-sub{font-size:11px;color:var(--muted);}
+.sug-right{text-align:right;}
+.sug-price{font-family:var(--font-head);font-size:13px;font-weight:600;}
+.sug-chg{font-size:11px;}
+.btn-add-stock{width:100%;padding:12px;background:var(--green);color:#060d10;border:none;border-radius:9px;font-family:var(--font-head);font-size:14px;font-weight:700;cursor:pointer;margin-top:1rem;transition:background .15s;}
+.btn-add-stock:hover{background:var(--green-dim);}
+
+/* ── WATCHLIST TABLE ── */
+.watchlist-card{background:var(--bg2);border:0.5px solid var(--border);border-radius:14px;overflow:hidden;}
+.watchlist-toolbar{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:0.5px solid var(--border);}
+.wl-title{font-family:var(--font-head);font-size:15px;font-weight:600;}
+.wl-tools{display:flex;gap:8px;align-items:center;}
+.wl-search{display:flex;align-items:center;gap:8px;background:var(--bg3);border:0.5px solid var(--border);border-radius:8px;padding:6px 12px;}
+.wl-search input{background:none;border:none;outline:none;color:var(--text);font-size:13px;font-family:var(--font-body);width:160px;}
+.wl-search input::placeholder{color:var(--muted2);}
+.wl-search svg{stroke:var(--muted2);width:13px;height:13px;}
+.filter-btn{padding:6px 14px;border-radius:7px;background:var(--bg3);border:0.5px solid var(--border);color:var(--muted);font-size:12px;cursor:pointer;transition:all .15s;}
+.filter-btn.active,.filter-btn:hover{border-color:var(--green);color:var(--green);}
+
+.wl-table{width:100%;border-collapse:collapse;}
+.wl-table th{font-size:12px;color:var(--muted);font-weight:400;padding:12px 20px;text-align:left;border-bottom:0.5px solid var(--border);letter-spacing:0.04em;}
+.wl-table th:not(:first-child){text-align:right;}
+.wl-table th.sortable{cursor:pointer;}
+.wl-table th.sortable:hover{color:var(--text);}
+.wl-table td{padding:14px 20px;border-bottom:0.5px solid rgba(255,255,255,0.03);font-size:13.5px;transition:background .15s;}
+.wl-table td:not(:first-child){text-align:right;}
+.wl-table tr:hover td{background:rgba(255,255,255,0.02);}
+.wl-table tr:last-child td{border-bottom:none;}
+
+.stock-info{display:flex;align-items:center;gap:10px;}
+.st-avatar{width:34px;height:34px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0;}
+.st-name{font-weight:600;font-size:14px;}
+.st-sub{font-size:11px;color:var(--muted);}
+.st-exchange{font-size:10px;color:var(--muted2);background:var(--bg3);padding:2px 6px;border-radius:4px;margin-left:6px;}
+
+.price-val{font-family:var(--font-head);font-size:14px;font-weight:600;}
+.chg-val{font-size:13px;font-weight:500;}
+.chg-badge{display:inline-block;padding:3px 8px;border-radius:5px;font-size:12px;font-weight:600;}
+.chg-badge.up{background:rgba(0,230,118,0.12);color:var(--green);}
+.chg-badge.down{background:rgba(255,82,82,0.12);color:var(--red);}
+
+/* sparkline cell */
+.spark-cell{width:80px;}
+.spark-cell svg{width:80px;height:28px;}
+
+/* action buttons */
+.act-btns{display:flex;gap:6px;justify-content:flex-end;}
+.act-btn{width:28px;height:28px;border-radius:7px;border:0.5px solid var(--border);background:var(--bg3);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .15s;}
+.act-btn svg{width:13px;height:13px;stroke:var(--muted);}
+.act-btn:hover{border-color:var(--red);}
+.act-btn:hover svg{stroke:var(--red);}
+.act-btn.alert-btn:hover{border-color:var(--green);}
+.act-btn.alert-btn:hover svg{stroke:var(--green);}
+
+/* empty state */
+.empty-state{padding:60px 20px;text-align:center;}
+.empty-icon{width:60px;height:60px;border-radius:14px;background:var(--green-glow);border:1px solid var(--border-green);display:flex;align-items:center;justify-content:center;margin:0 auto 1rem;}
+.empty-icon svg{stroke:var(--green);width:26px;height:26px;}
+.empty-title{font-family:var(--font-head);font-size:16px;font-weight:600;margin-bottom:8px;}
+.empty-sub{font-size:13px;color:var(--muted);margin-bottom:1.5rem;}
+
+/* scroll */
+::-webkit-scrollbar{width:4px;height:4px;}
+::-webkit-scrollbar-track{background:transparent;}
+::-webkit-scrollbar-thumb{background:var(--bg4);border-radius:4px;}
+
+/* toast */
+.toast{position:fixed;bottom:24px;right:24px;z-index:999;padding:10px 18px;border-radius:9px;background:var(--bg3);border:0.5px solid var(--border-green);font-size:13px;color:var(--text);display:flex;align-items:center;gap:8px;transform:translateY(80px);opacity:0;transition:all .3s;}
+.toast.show{transform:translateY(0);opacity:1;}
+.toast-dot{width:7px;height:7px;border-radius:50%;background:var(--green);}
+
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.wl-table tr{animation:fadeUp .3s ease both;}
+</style>
+</head>
+<body>
+<div class="app">
+
+<!-- ── SIDEBAR ── -->
+<aside class="sidebar">
+  <a href="dashboard.html" class="sidebar-logo">
+    <div class="logo-icon">
+      <svg viewBox="0 0 16 16" fill="none"><polyline points="1,13 5,7 9,10 13,3 15,5" stroke="#00e676" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </div>
+    MarketEdge
+  </a>
+  <nav class="side-nav">
+    <a class="nav-item" href="dashboard.html">
+      <svg viewBox="0 0 20 20" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="7" height="7" rx="1.5"/><rect x="11" y="2" width="7" height="7" rx="1.5"/><rect x="2" y="11" width="7" height="7" rx="1.5"/><rect x="11" y="11" width="7" height="7" rx="1.5"/></svg>
+      Dashboard
+    </a>
+    <a class="nav-item active" href="watchlist.html">
+      <svg viewBox="0 0 20 20" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2 10h16M2 5h16M2 15h10"/></svg>
+      Watchlist
+    </a>
+    <a class="nav-item" href="#">
+      <svg viewBox="0 0 20 20" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="2,16 6,9 10,12 14,5 18,7"/></svg>
+      Markets
+    </a>
+    <a class="nav-item" href="#">
+      <svg viewBox="0 0 20 20" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 2v4M10 14v4M2 10h4M14 10h4"/><circle cx="10" cy="10" r="3"/></svg>
+      Analysis
+    </a>
+    <a class="nav-item" href="#">
+      <svg viewBox="0 0 20 20" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="14" height="13" rx="2"/><line x1="3" y1="8" x2="17" y2="8"/><line x1="7" y1="12" x2="13" y2="12"/></svg>
+      News
+    </a>
+    <a class="nav-item" href="#">
+      <svg viewBox="0 0 20 20" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="10" cy="10" r="8"/><polyline points="10,6 10,10 13,12"/></svg>
+      Portfolio
+    </a>
+    <a class="nav-item" href="#">
+      <svg viewBox="0 0 20 20" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 2a6 6 0 016 6c0 4-6 10-6 10S4 12 4 8a6 6 0 016-6z"/><circle cx="10" cy="8" r="2"/></svg>
+      Alerts
+    </a>
+    <a class="nav-item" href="dashboard.html">
+      <svg viewBox="0 0 20 20" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="2" width="14" height="16" rx="2"/><line x1="7" y1="6" x2="13" y2="6"/><line x1="7" y1="10" x2="13" y2="10"/><line x1="7" y1="14" x2="10" y2="14"/></svg>
+      Calculator
+    </a>
+    <a class="nav-item" href="#">
+      <svg viewBox="0 0 20 20" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10l7-7 7 7"/><path d="M5 8v8h4v-4h2v4h4V8"/></svg>
+      Reports
+    </a>
+    <a class="nav-item" href="#">
+      <svg viewBox="0 0 20 20" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="10" cy="10" r="2"/><path d="M10 2v2M10 16v2M2 10h2M16 10h2M4.22 4.22l1.42 1.42M14.36 14.36l1.42 1.42M4.22 15.78l1.42-1.42M14.36 5.64l1.42-1.42"/></svg>
+      Settings
+    </a>
+  </nav>
+</aside>
+
+<!-- ── MAIN ── -->
+<div class="main">
+
+  <!-- TOPBAR -->
+  <div class="topbar">
+    <div class="topbar-indices">
+      <div class="idx"><span class="idx-name">NIFTY 50</span><span class="idx-val" id="tb-nifty">--</span><span class="idx-chg" id="tb-nifty-c">--</span></div>
+      <div class="idx"><span class="idx-name">SENSEX</span><span class="idx-val" id="tb-sensex">--</span><span class="idx-chg" id="tb-sensex-c">--</span></div>
+      <div class="idx"><span class="idx-name">NASDAQ</span><span class="idx-val" id="tb-nasdaq">--</span><span class="idx-chg" id="tb-nasdaq-c">--</span></div>
+    </div>
+    <div class="search-bar">
+      <svg viewBox="0 0 16 16" fill="none"><circle cx="7" cy="7" r="4.5" stroke-width="1.4"/><line x1="10.5" y1="10.5" x2="14" y2="14" stroke-width="1.4" stroke-linecap="round"/></svg>
+      <input type="text" placeholder="Search stocks, indices, news..."/>
+    </div>
+  </div>
+
+  <!-- CONTENT -->
+  <div class="content">
+
+    <!-- Header -->
+    <div class="page-header">
+      <div>
+        <h1>Watchlist</h1>
+        <p>Track your favourite stocks in real time — <span id="wl-count">0</span> stocks added</p>
+      </div>
+      <button class="btn-add" onclick="openModal()">
+        <svg viewBox="0 0 16 16" fill="none"><line x1="8" y1="2" x2="8" y2="14" stroke-width="2" stroke-linecap="round"/><line x1="2" y1="8" x2="14" y2="8" stroke-width="2" stroke-linecap="round"/></svg>
+        Add Stock
+      </button>
+    </div>
+
+    <!-- Summary stats -->
+    <div class="stats-row">
+      <div class="stat-box">
+        <div class="stat-box-label">Total Stocks</div>
+        <div class="stat-box-val" id="st-total">0</div>
+        <div class="stat-box-sub" style="color:var(--muted);">In your watchlist</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-box-label">Gainers Today</div>
+        <div class="stat-box-val up" id="st-gainers">0</div>
+        <div class="stat-box-sub up" id="st-gainers-sub">stocks up today</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-box-label">Losers Today</div>
+        <div class="stat-box-val down" id="st-losers">0</div>
+        <div class="stat-box-sub down" id="st-losers-sub">stocks down today</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-box-label">Top Gainer</div>
+        <div class="stat-box-val up" id="st-top">--</div>
+        <div class="stat-box-sub up" id="st-top-pct">--</div>
+      </div>
+    </div>
+
+    <!-- Watchlist Table -->
+    <div class="watchlist-card">
+      <div class="watchlist-toolbar">
+        <span class="wl-title">My Watchlist</span>
+        <div class="wl-tools">
+          <div class="wl-search">
+            <svg viewBox="0 0 16 16" fill="none"><circle cx="7" cy="7" r="4.5" stroke-width="1.3"/><line x1="10.5" y1="10.5" x2="14" y2="14" stroke-width="1.3" stroke-linecap="round"/></svg>
+            <input type="text" placeholder="Filter stocks..." id="filter-input" oninput="filterTable()"/>
+          </div>
+          <button class="filter-btn active" onclick="setFilter('all',this)">All</button>
+          <button class="filter-btn" onclick="setFilter('gainers',this)">Gainers</button>
+          <button class="filter-btn" onclick="setFilter('losers',this)">Losers</button>
+        </div>
+      </div>
+
+      <table class="wl-table">
+        <thead>
+          <tr>
+            <th class="sortable" onclick="sortBy('name')">Stock ↕</th>
+            <th class="sortable" onclick="sortBy('price')">Price ↕</th>
+            <th class="sortable" onclick="sortBy('change')">Change ↕</th>
+            <th class="sortable" onclick="sortBy('pct')">% Change ↕</th>
+            <th>52W High/Low</th>
+            <th>Trend</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="wl-tbody">
+        </tbody>
+      </table>
+
+      <div class="empty-state" id="empty-state">
+        <div class="empty-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/><line x1="12" y1="11" x2="12" y2="17"/><line x1="9" y1="14" x2="15" y2="14"/></svg>
+        </div>
+        <div class="empty-title">Your watchlist is empty</div>
+        <div class="empty-sub">Click "Add Stock" to start tracking your favourite stocks</div>
+        <button class="btn-add" onclick="openModal()" style="display:inline-flex;margin:0 auto;">
+          <svg viewBox="0 0 16 16" fill="none"><line x1="8" y1="2" x2="8" y2="14" stroke-width="2" stroke-linecap="round"/><line x1="2" y1="8" x2="14" y2="8" stroke-width="2" stroke-linecap="round"/></svg>
+          Add Your First Stock
+        </button>
+      </div>
+    </div>
+
+  </div><!-- /content -->
+</div><!-- /main -->
+</div><!-- /app -->
+
+<!-- ── ADD STOCK MODAL ── -->
+<div class="modal-overlay" id="modal" onclick="closeModalOutside(event)">
+  <div class="modal">
+    <div class="modal-title">
+      Add to Watchlist
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <input type="text" class="search-stock-input" id="modal-search" placeholder="Search stock name or symbol..." oninput="searchStocks(this.value)" autofocus/>
+    <div class="stock-suggestions" id="suggestions"></div>
+  </div>
+</div>
+
+<!-- ── TOAST ── -->
+<div class="toast" id="toast">
+  <div class="toast-dot"></div>
+  <span id="toast-msg">Stock added!</span>
+</div>
+
+<script>
+// ══════════════════════════════════════
+//  STOCK DATABASE (NSE stocks)
+// ══════════════════════════════════════
+const ALL_STOCKS = [
+  {sym:'RELIANCE.NS', name:'RELIANCE',   full:'Reliance Industries',  exchange:'NSE', color:{bg:'rgba(255,152,0,.18)',fg:'#FF9800'}},
+  {sym:'TCS.NS',      name:'TCS',        full:'Tata Consultancy Svc', exchange:'NSE', color:{bg:'rgba(33,150,243,.18)',fg:'#2196F3'}},
+  {sym:'HDFCBANK.NS', name:'HDFCBANK',   full:'HDFC Bank',            exchange:'NSE', color:{bg:'rgba(0,188,212,.18)',fg:'#00BCD4'}},
+  {sym:'ICICIBANK.NS',name:'ICICIBANK',  full:'ICICI Bank',           exchange:'NSE', color:{bg:'rgba(156,39,176,.18)',fg:'#9C27B0'}},
+  {sym:'INFY.NS',     name:'INFY',       full:'Infosys',              exchange:'NSE', color:{bg:'rgba(0,230,118,.18)',fg:'#00e676'}},
+  {sym:'WIPRO.NS',    name:'WIPRO',      full:'Wipro Limited',        exchange:'NSE', color:{bg:'rgba(255,82,82,.18)',fg:'#ff5252'}},
+  {sym:'TECHM.NS',    name:'TECHM',      full:'Tech Mahindra',        exchange:'NSE', color:{bg:'rgba(255,87,34,.18)',fg:'#FF5722'}},
+  {sym:'TITAN.NS',    name:'TITAN',      full:'Titan Company',        exchange:'NSE', color:{bg:'rgba(255,193,7,.18)',fg:'#FFC107'}},
+  {sym:'BAJFINANCE.NS',name:'BAJFINANCE',full:'Bajaj Finance',        exchange:'NSE', color:{bg:'rgba(103,58,183,.18)',fg:'#673AB7'}},
+  {sym:'MARUTI.NS',   name:'MARUTI',     full:'Maruti Suzuki',        exchange:'NSE', color:{bg:'rgba(76,175,80,.18)',fg:'#4CAF50'}},
+  {sym:'SUNPHARMA.NS',name:'SUNPHARMA', full:'Sun Pharmaceutical',   exchange:'NSE', color:{bg:'rgba(244,67,54,.18)',fg:'#F44336'}},
+  {sym:'NESTLEIND.NS',name:'NESTLE',    full:'Nestle India',         exchange:'NSE', color:{bg:'rgba(121,85,72,.18)',fg:'#795548'}},
+  {sym:'LTIM.NS',     name:'LTIM',      full:'LTIMindtree',          exchange:'NSE', color:{bg:'rgba(0,150,136,.18)',fg:'#009688'}},
+  {sym:'AXISBANK.NS', name:'AXISBANK',  full:'Axis Bank',            exchange:'NSE', color:{bg:'rgba(233,30,99,.18)',fg:'#E91E63'}},
+  {sym:'KOTAKBANK.NS',name:'KOTAKBANK', full:'Kotak Mahindra Bank',  exchange:'NSE', color:{bg:'rgba(255,152,0,.18)',fg:'#FF9800'}},
+  {sym:'ONGC.NS',     name:'ONGC',      full:'Oil & Natural Gas',    exchange:'NSE', color:{bg:'rgba(96,125,139,.18)',fg:'#607D8B'}},
+  {sym:'TATAMOTORS.NS',name:'TATAMOTORS',full:'Tata Motors',         exchange:'NSE', color:{bg:'rgba(63,81,181,.18)',fg:'#3F51B5'}},
+  {sym:'ADANIENT.NS', name:'ADANIENT',  full:'Adani Enterprises',    exchange:'NSE', color:{bg:'rgba(0,188,212,.18)',fg:'#00BCD4'}},
+  {sym:'SBIN.NS',     name:'SBIN',      full:'State Bank of India',  exchange:'NSE', color:{bg:'rgba(33,150,243,.18)',fg:'#2196F3'}},
+  {sym:'ITC.NS',      name:'ITC',       full:'ITC Limited',          exchange:'NSE', color:{bg:'rgba(139,195,74,.18)',fg:'#8BC34A'}},
+];
+
+// ══════════════════════════════════════
+//  STATE
+// ══════════════════════════════════════
+let watchlist = JSON.parse(localStorage.getItem('me_watchlist') || '[]');
+// Default stocks if empty
+if(watchlist.length === 0){
+  watchlist = ['RELIANCE.NS','TCS.NS','HDFCBANK.NS','INFY.NS','TITAN.NS'];
+  saveWatchlist();
+}
+
+let liveData = {}; // sym -> {price,change,pct,high52,low52}
+let filterMode = 'all';
+let sortKey = 'name', sortAsc = true;
+
+// ══════════════════════════════════════
+//  SAVE / LOAD
+// ══════════════════════════════════════
+function saveWatchlist(){ localStorage.setItem('me_watchlist', JSON.stringify(watchlist)); }
+
+// ══════════════════════════════════════
+//  API
+// ══════════════════════════════════════
+const PROXY = 'https://corsproxy.io/?';
+const YF    = 'https://query1.finance.yahoo.com';
+
+async function fetchQ(sym){
+  try{
+    const url=`${YF}/v8/finance/chart/${encodeURIComponent(sym)}?interval=1d&range=1d`;
+    const r=await fetch(PROXY+encodeURIComponent(url));
+    const j=await r.json();
+    const m=j?.chart?.result?.[0]?.meta;
+    if(!m)return null;
+    const price=m.regularMarketPrice, prev=m.chartPreviousClose||m.previousClose;
+    return{
+      price, change:price-prev, pct:(price-prev)/prev*100,
+      high52:m.fiftyTwoWeekHigh||price*1.2,
+      low52:m.fiftyTwoWeekLow||price*0.8,
+    };
+  }catch{return null;}
+}
+
+async function fetchSparkline(sym){
+  try{
+    const url=`${YF}/v8/finance/chart/${encodeURIComponent(sym)}?interval=5m&range=1d`;
+    const r=await fetch(PROXY+encodeURIComponent(url));
+    const j=await r.json();
+    const closes=j?.chart?.result?.[0]?.indicators?.quote?.[0]?.close;
+    return closes?.filter(v=>v!=null)||[];
+  }catch{return[];}
+}
+
+function iFmt(n,d=2){return n==null?'--':Number(n).toLocaleString('en-IN',{minimumFractionDigits:d,maximumFractionDigits:d});}
+
+// ══════════════════════════════════════
+//  TOPBAR INDICES
+// ══════════════════════════════════════
+async function loadTopbar(){
+  const pairs=[['^NSEI','tb-nifty','tb-nifty-c'],['^BSESN','tb-sensex','tb-sensex-c'],['^IXIC','tb-nasdaq','tb-nasdaq-c']];
+  for(const[sym,vId,cId] of pairs){
+    const d=await fetchQ(sym);
+    if(!d)continue;
+    document.getElementById(vId).textContent=iFmt(d.price);
+    const el=document.getElementById(cId);
+    el.textContent=(d.pct>=0?'+':'')+iFmt(d.pct)+'%';
+    el.className='idx-chg'+(d.pct<0?' red':'');
+  }
+}
+
+// ══════════════════════════════════════
+//  LOAD WATCHLIST DATA
+// ══════════════════════════════════════
+async function loadWatchlistData(){
+  for(const sym of watchlist){
+    const [q, spark] = await Promise.all([fetchQ(sym), fetchSparkline(sym)]);
+    if(q) liveData[sym] = {...q, spark};
+  }
+  renderTable();
+  updateStats();
+}
+
+// ══════════════════════════════════════
+//  RENDER TABLE
+// ══════════════════════════════════════
+function renderTable(){
+  const tbody = document.getElementById('wl-tbody');
+  const empty = document.getElementById('empty-state');
+  const filterText = document.getElementById('filter-input').value.toLowerCase();
+
+  let stocks = watchlist
+    .map(sym => {
+      const info = ALL_STOCKS.find(s => s.sym === sym) || {name:sym,full:sym,exchange:'NSE',color:{bg:'rgba(255,255,255,.1)',fg:'#aaa'}};
+      const data = liveData[sym] || {};
+      return {...info, ...data, sym};
+    })
+    .filter(s => {
+      if(filterText && !s.name.toLowerCase().includes(filterText) && !s.full.toLowerCase().includes(filterText)) return false;
+      if(filterMode === 'gainers' && (s.pct||0) < 0) return false;
+      if(filterMode === 'losers'  && (s.pct||0) >= 0) return false;
+      return true;
+    });
+
+  // Sort
+  stocks.sort((a,b)=>{
+    let va,vb;
+    if(sortKey==='name'){va=a.name;vb=b.name;}
+    else if(sortKey==='price'){va=a.price||0;vb=b.price||0;}
+    else if(sortKey==='change'){va=a.change||0;vb=b.change||0;}
+    else if(sortKey==='pct'){va=a.pct||0;vb=b.pct||0;}
+    if(typeof va==='string') return sortAsc?va.localeCompare(vb):vb.localeCompare(va);
+    return sortAsc?va-vb:vb-va;
+  });
+
+  empty.style.display = watchlist.length === 0 ? 'block' : 'none';
+
+  tbody.innerHTML = stocks.map((s,idx) => {
+    const up = (s.pct||0) >= 0;
+    const sign = up ? '+' : '';
+    const clr = up ? 'var(--green)' : 'var(--red)';
+    const sparkSvg = buildSparkline(s.spark||[], up);
+    const high = s.high52 ? iFmt(s.high52) : '--';
+    const low  = s.low52  ? iFmt(s.low52)  : '--';
+
+    return `<tr style="animation-delay:${idx*0.04}s">
+      <td>
+        <div class="stock-info">
+          <div class="st-avatar" style="background:${s.color.bg};color:${s.color.fg};">${s.name[0]}</div>
+          <div>
+            <div class="st-name">${s.name} <span class="st-exchange">${s.exchange}</span></div>
+            <div class="st-sub">${s.full}</div>
+          </div>
+        </div>
+      </td>
+      <td><span class="price-val">₹${s.price ? iFmt(s.price) : '--'}</span></td>
+      <td><span class="chg-val" style="color:${clr}">${s.change ? sign+iFmt(s.change) : '--'}</span></td>
+      <td><span class="chg-badge ${up?'up':'down'}">${s.pct ? sign+iFmt(s.pct)+'%' : '--'}</span></td>
+      <td style="font-size:12px;color:var(--muted);">
+        <span style="color:var(--green);">▲ ₹${high}</span><br/>
+        <span style="color:var(--red);">▼ ₹${low}</span>
+      </td>
+      <td class="spark-cell">${sparkSvg}</td>
+      <td>
+        <div class="act-btns">
+          <div class="act-btn alert-btn" title="Set Alert" onclick="showToast('🔔 Alert set for ${s.name}')">
+            <svg viewBox="0 0 16 16" fill="none"><path d="M8 2a4 4 0 014 4v3l1.5 2h-11L4 9V6a4 4 0 014-4z" stroke-width="1.3"/><path d="M6.5 13.5a1.5 1.5 0 003 0" stroke-width="1.3"/></svg>
+          </div>
+          <div class="act-btn" title="Remove" onclick="removeStock('${s.sym}')">
+            <svg viewBox="0 0 16 16" fill="none"><line x1="3" y1="3" x2="13" y2="13" stroke-width="1.5" stroke-linecap="round"/><line x1="13" y1="3" x2="3" y2="13" stroke-width="1.5" stroke-linecap="round"/></svg>
+          </div>
+        </div>
+      </td>
+    </tr>`;
+  }).join('');
+
+  document.getElementById('wl-count').textContent = watchlist.length;
+}
+
+function buildSparkline(data, up){
+  if(!data||data.length<2) return `<svg viewBox="0 0 80 28"><line x1="5" y1="14" x2="75" y2="14" stroke="rgba(255,255,255,0.1)" stroke-width="1"/></svg>`;
+  const min=Math.min(...data), max=Math.max(...data), rng=max-min||1;
+  const pts=data.map((v,i)=>{
+    const x=5+(70*i/(data.length-1));
+    const y=23-((v-min)/rng*18);
+    return`${x.toFixed(1)},${y.toFixed(1)}`;
+  }).join(' ');
+  const color=up?'#00e676':'#ff5252';
+  return `<svg viewBox="0 0 80 28" preserveAspectRatio="none"><polyline points="${pts}" fill="none" stroke="${color}" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+}
+
+// ══════════════════════════════════════
+//  STATS
+// ══════════════════════════════════════
+function updateStats(){
+  const data = watchlist.map(sym=>liveData[sym]).filter(Boolean);
+  const gainers = data.filter(d=>d.pct>=0);
+  const losers  = data.filter(d=>d.pct<0);
+  const top = data.reduce((a,b)=>(!a||b.pct>a.pct)?b:a, null);
+  const topSym = top ? watchlist.find(s=>liveData[s]===top) : null;
+  const topInfo = topSym ? ALL_STOCKS.find(s=>s.sym===topSym) : null;
+
+  document.getElementById('st-total').textContent   = watchlist.length;
+  document.getElementById('st-gainers').textContent = gainers.length;
+  document.getElementById('st-losers').textContent  = losers.length;
+  document.getElementById('st-gainers-sub').textContent = gainers.length === 1 ? 'stock up today' : 'stocks up today';
+  document.getElementById('st-losers-sub').textContent  = losers.length  === 1 ? 'stock down today' : 'stocks down today';
+  document.getElementById('st-top').textContent    = topInfo ? topInfo.name : '--';
+  document.getElementById('st-top-pct').textContent = top ? '+'+(top.pct).toFixed(2)+'%' : '--';
+}
+
+// ══════════════════════════════════════
+//  FILTER & SORT
+// ══════════════════════════════════════
+function setFilter(mode, btn){
+  filterMode = mode;
+  document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  renderTable();
+}
+function filterTable(){ renderTable(); }
+function sortBy(key){
+  if(sortKey===key) sortAsc=!sortAsc;
+  else{sortKey=key;sortAsc=true;}
+  renderTable();
+}
+
+// ══════════════════════════════════════
+//  ADD STOCK
+// ══════════════════════════════════════
+function openModal(){
+  document.getElementById('modal').classList.add('show');
+  document.getElementById('modal-search').value='';
+  document.getElementById('suggestions').innerHTML='';
+  setTimeout(()=>document.getElementById('modal-search').focus(),100);
+  showAllSuggestions();
+}
+function closeModal(){ document.getElementById('modal').classList.remove('show'); }
+function closeModalOutside(e){ if(e.target.id==='modal') closeModal(); }
+
+function showAllSuggestions(){
+  const available = ALL_STOCKS.filter(s=>!watchlist.includes(s.sym));
+  renderSuggestions(available);
+}
+
+function searchStocks(q){
+  if(!q.trim()){showAllSuggestions();return;}
+  const results = ALL_STOCKS.filter(s=>
+    !watchlist.includes(s.sym) &&
+    (s.name.toLowerCase().includes(q.toLowerCase()) || s.full.toLowerCase().includes(q.toLowerCase()))
+  );
+  renderSuggestions(results);
+}
+
+function renderSuggestions(stocks){
+  const el = document.getElementById('suggestions');
+  if(stocks.length === 0){
+    el.innerHTML = `<div style="text-align:center;padding:24px;color:var(--muted);font-size:13px;">No stocks found</div>`;
+    return;
+  }
+  el.innerHTML = stocks.map(s => {
+    const d = liveData[s.sym];
+    const priceHtml = d ? `<div class="sug-price">₹${iFmt(d.price)}</div><div class="sug-chg ${d.pct>=0?'up':'down'}">${d.pct>=0?'+':''}${iFmt(d.pct)}%</div>` : `<div class="sug-price" style="color:var(--muted)">--</div>`;
+    return `<div class="suggestion-item" onclick="addStock('${s.sym}')">
+      <div class="sug-left">
+        <div class="sug-avatar" style="background:${s.color.bg};color:${s.color.fg};">${s.name[0]}</div>
+        <div><div class="sug-name">${s.name}</div><div class="sug-sub">${s.full}</div></div>
+      </div>
+      <div class="sug-right">${priceHtml}</div>
+    </div>`;
+  }).join('');
+}
+
+async function addStock(sym){
+  if(watchlist.includes(sym)){showToast('Already in watchlist!');return;}
+  watchlist.push(sym);
+  saveWatchlist();
+  closeModal();
+  showToast('✅ Added to watchlist!');
+  // Fetch data for new stock
+  const [q,spark] = await Promise.all([fetchQ(sym),fetchSparkline(sym)]);
+  if(q) liveData[sym]={...q,spark};
+  renderTable();
+  updateStats();
+}
+
+function removeStock(sym){
+  watchlist = watchlist.filter(s=>s!==sym);
+  delete liveData[sym];
+  saveWatchlist();
+  renderTable();
+  updateStats();
+  showToast('🗑️ Removed from watchlist');
+}
+
+// ══════════════════════════════════════
+//  TOAST
+// ══════════════════════════════════════
+let toastTimer;
+function showToast(msg){
+  const t=document.getElementById('toast');
+  document.getElementById('toast-msg').textContent=msg;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer=setTimeout(()=>t.classList.remove('show'),2800);
+}
+
+// ══════════════════════════════════════
+//  INIT
+// ══════════════════════════════════════
+async function init(){
+  renderTable();
+  loadTopbar();
+  await loadWatchlistData();
+  // Refresh every 60s
+  setInterval(async()=>{
+    await loadWatchlistData();
+    loadTopbar();
+  },60000);
+}
+init();
+</script>
+</body>
+</html>
