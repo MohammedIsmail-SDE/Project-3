@@ -7,3 +7,175 @@
   50%  { transform: translateY(-10px) scale(1.02); }
   100% { transform: translateY(0px) scale(1); }
 }
+/* =========================
+   MOBILE RESPONSIVE FIX
+========================= */
+
+@media screen and (max-width: 768px){
+
+  html,body{
+    width:100%;
+    overflow-x:hidden;
+  }
+
+  .app{
+    flex-direction:column;
+    height:auto;
+    min-height:100vh;
+  }
+
+  .main{
+    width:100%;
+    overflow-x:hidden;
+  }
+
+  #sections-wrap{
+    width:100%;
+    overflow-x:hidden;
+  }
+
+  #sections-wrap > div{
+    padding:14px;
+    width:100%;
+    overflow-x:hidden;
+  }
+
+  /* SIDEBAR */
+  .sidebar{
+    position:fixed;
+    left:0;
+    top:0;
+    bottom:0;
+    width:260px;
+    transform:translateX(-100%);
+    transition:0.3s ease;
+  }
+
+  .sidebar.mobile-open{
+    transform:translateX(0);
+  }
+
+  /* TOPBAR */
+  .topbar{
+    width:100%;
+    padding:0 10px;
+    gap:10px;
+  }
+
+  .topbar-indices{
+    overflow-x:auto;
+    white-space:nowrap;
+  }
+
+  /* PAGE HEADER */
+  .page-header{
+    flex-direction:column;
+    align-items:flex-start;
+    gap:10px;
+  }
+
+  .page-header h1{
+    font-size:20px;
+  }
+
+  /* GRID FIXES */
+  .mid-row,
+  .bottom-row{
+    display:flex;
+    flex-direction:column;
+  }
+
+  .right-stack{
+    display:flex;
+    flex-direction:column;
+  }
+
+  /* CHART */
+  .chart-panel{
+    width:100%;
+    padding:14px;
+  }
+
+  .area-chart-wrap{
+    height:180px;
+  }
+
+  /* TABLE FIX */
+  .table-panel{
+    overflow-x:auto;
+  }
+
+  table{
+    min-width:600px;
+  }
+
+  /* WATCHLIST */
+  #watchlist-content table{
+    min-width:700px;
+  }
+
+  /* MARKET GRID */
+  [style*="repeat(3,1fr)"]{
+    grid-template-columns:1fr !important;
+  }
+
+  /* PORTFOLIO */
+  [style*="repeat(4,1fr)"]{
+    grid-template-columns:1fr 1fr !important;
+  }
+
+  /* ANALYSIS */
+  [style*="grid-template-columns:1fr 1fr"]{
+    grid-template-columns:1fr !important;
+  }
+
+  /* CALCULATOR */
+  .calc-two-col,
+  [style*="flex-direction:row"]{
+    flex-direction:column !important;
+  }
+
+  /* DONUT CHART */
+  canvas{
+    max-width:100%;
+    height:auto !important;
+  }
+
+  /* INPUTS */
+  input,
+  button{
+    max-width:100%;
+  }
+
+}
+
+/* EXTRA SMALL DEVICES */
+
+@media screen and (max-width:480px){
+
+  .chart-price{
+    font-size:22px;
+  }
+
+  .panel-title{
+    font-size:13px;
+  }
+
+  .topbar{
+    height:auto;
+    padding:10px;
+  }
+
+  .topbar-indices{
+    gap:14px;
+  }
+
+  .stock-name{
+    font-size:12px;
+  }
+
+  .news-headline{
+    font-size:11px;
+  }
+
+}
