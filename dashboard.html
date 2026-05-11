@@ -242,9 +242,164 @@ nav.side-nav{flex:1;padding:16px 10px;}
 
 
 
+
+/* ══════════════════════════════════════
+   MOBILE RESPONSIVE — MarketEdge
+   ══════════════════════════════════════ */
+
+/* Hamburger button — hidden on desktop */
+.hamburger {
+  display: none;
+  flex-direction: column;
+  gap: 5px;
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 8px;
+  background: transparent;
+  border: none;
+  z-index: 200;
+}
+.hamburger span {
+  display: block;
+  width: 22px;
+  height: 2px;
+  background: var(--text);
+  border-radius: 2px;
+  transition: all 0.3s;
+}
+.hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+.hamburger.open span:nth-child(2) { opacity: 0; }
+.hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+/* Sidebar overlay for mobile */
+.sidebar-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.6);
+  z-index: 99;
+  backdrop-filter: blur(2px);
+}
+.sidebar-overlay.visible { display: block; }
+
+@media (max-width: 768px) {
+  /* ── LAYOUT ── */
+  .app { flex-direction: column; height: 100vh; overflow: hidden; }
+
+  /* ── SIDEBAR — slide in from left ── */
+  .sidebar {
+    position: fixed;
+    top: 0; left: 0; bottom: 0;
+    width: 240px !important;
+    min-width: 240px !important;
+    transform: translateX(-100%);
+    transition: transform 0.3s ease;
+    z-index: 100;
+    box-shadow: 4px 0 24px rgba(0,0,0,0.5);
+  }
+  .sidebar.mobile-open { transform: translateX(0); }
+
+  /* ── TOPBAR ── */
+  .topbar {
+    padding: 0 12px;
+    height: 52px;
+    gap: 8px;
+  }
+  .hamburger { display: flex; }
+  .topbar-indices {
+    gap: 0.8rem;
+    font-size: 11px;
+    flex: 1;
+    overflow-x: auto;
+    white-space: nowrap;
+    scrollbar-width: none;
+  }
+  .topbar-indices::-webkit-scrollbar { display: none; }
+  .index-item { flex-shrink: 0; }
+  .index-name { display: none; }
+  .topbar-right { gap: 8px; }
+  .search-bar { display: none; }
+
+  /* ── MAIN CONTENT ── */
+  .main { flex: 1; min-height: 0; }
+  #sections-wrap > div { padding: 1rem; gap: 1rem; }
+
+  /* ── PAGE HEADER ── */
+  .page-header { flex-direction: column; gap: 8px; }
+  .page-header h1 { font-size: 18px; }
+  .btn-customize { font-size: 12px; padding: 6px 12px; }
+
+  /* ── DASHBOARD GRIDS ── */
+  .mid-row { grid-template-columns: 1fr !important; }
+  .bottom-row { grid-template-columns: 1fr !important; }
+
+  /* ── CHART PANEL ── */
+  .chart-panel { padding: 14px; }
+  .area-chart-wrap { height: 180px !important; }
+
+  /* ── MARKET OVERVIEW (right panel) ── */
+  .right-stack { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; }
+
+  /* ── STOCK TABLES ── */
+  .stock-table th:nth-child(n+4),
+  .stock-table td:nth-child(n+4) { display: none; }
+
+  /* ── INDICES GRID (markets page) ── */
+  [style*="grid-template-columns:repeat(3"] {
+    grid-template-columns: 1fr 1fr !important;
+  }
+  [style*="grid-template-columns:1fr 1fr 1fr"] {
+    grid-template-columns: 1fr 1fr !important;
+  }
+
+  /* ── CALCULATOR ── */
+  [style*="grid-template-columns:minmax(0,1fr) minmax(0,1fr)"],
+  .calc-two-col {
+    flex-direction: column !important;
+  }
+
+  /* ── PORTFOLIO CARDS ── */
+  [style*="grid-template-columns:1fr 1fr 1fr 1fr"] {
+    grid-template-columns: 1fr 1fr !important;
+  }
+
+  /* ── ANALYSIS GRID ── */
+  [style*="grid-template-columns:1fr 1fr;gap:1rem"] {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* ── SETTINGS ── */
+  [style*="grid-template-columns:1fr 1fr;gap:1rem;max-width:700px"] {
+    grid-template-columns: 1fr !important;
+    max-width: 100% !important;
+  }
+
+  /* ── WATCHLIST TABLE ── */
+  .watchlist-table th:nth-child(n+5),
+  .watchlist-table td:nth-child(n+5) { display: none; }
+
+  /* ── REPORTS ── */
+  [style*="grid-template-columns:1fr 1fr"] {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* ── NEWS CARDS ── */
+  .news-filters { flex-wrap: wrap; gap: 6px; }
+
+  /* ── FONT SIZES ── */
+  .stat-value { font-size: 20px !important; }
+  .panel-title { font-size: 13px; }
+}
+
+@media (max-width: 400px) {
+  .topbar-indices { gap: 0.5rem; }
+  #sections-wrap > div { padding: 0.75rem; }
+  .chart-panel { padding: 10px; }
+}
 </style>
 </head>
 <body>
+<div class="sidebar-overlay" id="sidebar-overlay" onclick="closeSidebar()"></div>
 <div class="app">
 
 <!-- ── SIDEBAR ── -->
@@ -304,7 +459,7 @@ nav.side-nav{flex:1;padding:16px 10px;}
 <div class="main">
 
   <!-- TOP BAR -->
-  <div class="topbar">
+  <div class="topbar"><button class="hamburger" id="hamburger" onclick="toggleSidebar()" aria-label="Menu"><span></span><span></span><span></span></button>
     <div class="topbar-indices">
       <div class="idx">
         <span class="idx-name">NIFTY 50</span>
@@ -1528,6 +1683,30 @@ function _initCalcCharts() {
   }
   calcRun();
 }
+
+// ── MOBILE SIDEBAR ──
+function toggleSidebar() {
+  const sidebar = document.querySelector('.sidebar');
+  const overlay = document.getElementById('sidebar-overlay');
+  const btn = document.getElementById('hamburger');
+  sidebar.classList.toggle('mobile-open');
+  overlay.classList.toggle('visible');
+  btn.classList.toggle('open');
+}
+function closeSidebar() {
+  const sidebar = document.querySelector('.sidebar');
+  const overlay = document.getElementById('sidebar-overlay');
+  const btn = document.getElementById('hamburger');
+  sidebar.classList.remove('mobile-open');
+  overlay.classList.remove('visible');
+  btn.classList.remove('open');
+}
+// Close sidebar when a nav item is clicked on mobile
+document.querySelectorAll('.nav-item').forEach(item => {
+  item.addEventListener('click', () => {
+    if (window.innerWidth <= 768) closeSidebar();
+  });
+});
 
 </script>
 </body>
