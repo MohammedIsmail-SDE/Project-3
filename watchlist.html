@@ -158,6 +158,46 @@ nav.side-nav{flex:1;padding:16px 10px;overflow-y:auto;}
 
 @keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
 .wl-table tr{animation:fadeUp .3s ease both;}
+
+/* ── MOBILE RESPONSIVE ── */
+@media (max-width: 768px) {
+  #hamburger { display: flex !important; }
+  .sidebar {
+    position: fixed; top:0; left:0; bottom:0;
+    width: 260px !important; min-width: 260px !important;
+    transform: translateX(-100%);
+    transition: transform 0.3s ease;
+    z-index: 200;
+    box-shadow: 8px 0 32px rgba(0,0,0,0.6);
+  }
+  .sidebar.mobile-open { transform: translateX(0); }
+  .main { width: 100% !important; }
+  .topbar { padding: 0 12px !important; gap: 8px !important; }
+  .search-bar { display: none !important; }
+  .topbar-indices { overflow-x: auto; white-space: nowrap; scrollbar-width: none; }
+  .topbar-indices::-webkit-scrollbar { display: none; }
+  .content { padding: 1rem !important; }
+  .page-header { flex-direction: column !important; align-items: flex-start !important; gap: 10px !important; }
+  .stats-row { grid-template-columns: 1fr 1fr !important; }
+  .watchlist-toolbar { flex-direction: column !important; align-items: flex-start !important; gap: 10px !important; }
+  .wl-tools { flex-wrap: wrap !important; gap: 6px !important; }
+  .wl-search input { width: 100px !important; }
+  /* Hide less important columns on mobile */
+  .wl-table th:nth-child(5),
+  .wl-table td:nth-child(5),
+  .wl-table th:nth-child(6),
+  .wl-table td:nth-child(6) { display: none !important; }
+  /* Horizontal scroll for table */
+  .watchlist-card { overflow-x: auto; }
+  .wl-table { min-width: 500px; }
+  .wl-table td { padding: 12px 10px !important; }
+  .wl-table th { padding: 10px 10px !important; }
+}
+@media (max-width: 480px) {
+  .stats-row { grid-template-columns: 1fr 1fr !important; }
+  .stat-box-val { font-size: 18px !important; }
+  .page-header h1 { font-size: 20px !important; }
+}
 </style>
 </head>
 <body>
@@ -219,7 +259,13 @@ nav.side-nav{flex:1;padding:16px 10px;overflow-y:auto;}
 <div class="main">
 
   <!-- TOPBAR -->
+  <div class="sidebar-overlay" id="sidebar-overlay" onclick="closeSidebar()" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:199;backdrop-filter:blur(2px);"></div>
   <div class="topbar">
+    <button id="hamburger" onclick="toggleSidebar()" style="display:none;flex-direction:column;gap:5px;cursor:pointer;padding:8px;background:transparent;border:none;z-index:201;flex-shrink:0;" aria-label="Menu">
+      <span style="display:block;width:22px;height:2px;background:var(--text);border-radius:2px;transition:all .3s;"></span>
+      <span style="display:block;width:22px;height:2px;background:var(--text);border-radius:2px;transition:all .3s;"></span>
+      <span style="display:block;width:22px;height:2px;background:var(--text);border-radius:2px;transition:all .3s;"></span>
+    </button>
     <div class="topbar-indices">
       <div class="idx"><span class="idx-name">NIFTY 50</span><span class="idx-val" id="tb-nifty">--</span><span class="idx-chg" id="tb-nifty-c">--</span></div>
       <div class="idx"><span class="idx-name">SENSEX</span><span class="idx-val" id="tb-sensex">--</span><span class="idx-chg" id="tb-sensex-c">--</span></div>
@@ -661,6 +707,25 @@ async function init(){
   },60000);
 }
 init();
+
+// ── MOBILE SIDEBAR ──
+function toggleSidebar(){
+  const s=document.querySelector('.sidebar');
+  const o=document.getElementById('sidebar-overlay');
+  const b=document.getElementById('hamburger');
+  s.classList.toggle('mobile-open');
+  o.style.display=s.classList.contains('mobile-open')?'block':'none';
+}
+function closeSidebar(){
+  const s=document.querySelector('.sidebar');
+  const o=document.getElementById('sidebar-overlay');
+  s.classList.remove('mobile-open');
+  o.style.display='none';
+}
+// Close sidebar when nav item clicked on mobile
+document.querySelectorAll('.nav-item').forEach(item=>{
+  item.addEventListener('click',()=>{ if(window.innerWidth<=768) closeSidebar(); });
+});
 </script>
 </body>
 </html>

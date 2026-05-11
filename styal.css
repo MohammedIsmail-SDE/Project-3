@@ -6,44 +6,4 @@
   0%   { transform: translateY(0px) scale(1); }
   50%  { transform: translateY(-10px) scale(1.02); }
   100% { transform: translateY(0px) scale(1); }
-}.bull {
-  animation: floatBull 3s ease-in-out infinite;
-}
-
-@keyframes floatBull {
-  0%   { transform: translateY(0px) scale(1); }
-  50%  { transform: translateY(-10px) scale(1.02); }
-  100% { transform: translateY(0px) scale(1); }
-}.bull {
-  animation: floatBull 3s ease-in-out infinite;
-}
-
-@keyframes floatBull {
-  0%   { transform: translateY(0px) scale(1); }
-  50%  { transform: translateY(-10px) scale(1.02); }
-  100% { transform: translateY(0px) scale(1); }
-}.bull {
-  animation: floatBull 3s ease-in-out infinite;
-}
-
-@keyframes floatBull {
-  0%   { transform: translateY(0px) scale(1); }
-  50%  { transform: translateY(-10px) scale(1.02); }
-  100% { transform: translateY(0px) scale(1); }
-}v.bull {
-  animation: floatBull 3s ease-in-out infinite;
-}
-
-@keyframes floatBull {
-  0%   { transform: translateY(0px) scale(1); }
-  50%  { transform: translateY(-10px) scale(1.02); }
-  100% { transform: translateY(0px) scale(1); }
-}.bull {
-  animation: floatBull 3s ease-in-out infinite;
-}
-
-@keyframes floatBull {
-  0%   { transform: translateY(0px) scale(1); }
-  50%  { transform: translateY(-10px) scale(1.03); }
-  100% { transform: translateY(0px) scale(1); }
 }
