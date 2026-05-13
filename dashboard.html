@@ -442,6 +442,7 @@ nav.side-nav{flex:1;padding:16px 10px;}
 <div class="main">
 
   <!-- TOP BAR -->
+   <button class="menu-btn" onclick="toggleSidebar()">☰</button>
   <div class="topbar"><button class="hamburger" id="hamburger" onclick="toggleSidebar()" aria-label="Menu"><span></span><span></span><span></span></button>
     <div class="topbar-indices">
       <div class="idx">
@@ -1682,7 +1683,6 @@ document.querySelectorAll('.nav-item').forEach(item => {
     if (window.innerWidth <= 768) closeSidebar();
   });
 });
-
 </script>
 </body>
 </html>

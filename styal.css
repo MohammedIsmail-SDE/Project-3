@@ -1,181 +1,103 @@
-.bull {
-  animation: floatBull 3s ease-in-out infinite;
-}
-
-@keyframes floatBull {
-  0%   { transform: translateY(0px) scale(1); }
-  50%  { transform: translateY(-10px) scale(1.02); }
-  100% { transform: translateY(0px) scale(1); }
-}
 /* =========================
    MOBILE RESPONSIVE FIX
 ========================= */
 
-@media screen and (max-width: 768px){
-
-  html,body{
-    width:100%;
-    overflow-x:hidden;
+@media screen and (max-width: 768px) {
+  html, body {
+    width: 100%;
+    overflow-x: hidden;
   }
 
-  .app{
-    flex-direction:column;
-    height:auto;
-    min-height:100vh;
+  .app {
+    flex-direction: column;
+    height: auto;
+    min-height: 100vh;
   }
 
-  .main{
-    width:100%;
-    overflow-x:hidden;
+  /* SIDEBAR FIX: Ensure it is completely off-screen and on top when active */
+  .sidebar {
+    position: fixed;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 280px;
+    z-index: 9999;
+    transform: translateX(-100%);
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    background: var(--bg2);
+    border-right: 1px solid var(--border);
   }
 
-  #sections-wrap{
-    width:100%;
-    overflow-x:hidden;
+  .sidebar.mobile-open {
+    transform: translateX(0);
   }
 
-  #sections-wrap > div{
-    padding:14px;
-    width:100%;
-    overflow-x:hidden;
+  /* OVERLAY: To dim the background when sidebar is open */
+  #sidebar-overlay.visible {
+    display: block;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.6);
+    backdrop-filter: blur(4px);
+    z-index: 9998;
   }
 
-  /* SIDEBAR */
-  .sidebar{
-    position:fixed;
-    left:0;
-    top:0;
-    bottom:0;
-    width:260px;
-    transform:translateX(-100%);
-    transition:0.3s ease;
+  .main {
+    width: 100%;
+    margin-left: 0;
+    padding-top: 60px; /* Space for fixed topbar */
   }
 
-  .sidebar.mobile-open{
-    transform:translateX(0);
+  /* TOPBAR FIX */
+  .topbar {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    z-index: 1000;
+    background: var(--bg);
+    padding: 10px 15px;
+    border-bottom: 1px solid var(--border2);
   }
 
-  /* TOPBAR */
-  .topbar{
-    width:100%;
-    padding:0 10px;
-    gap:10px;
+  /* GRID SYSTEM FIXES */
+  /* Force all multi-column layouts into a single column for readability */
+  .mid-row, 
+  .bottom-row,
+  .market-grid,
+  .analysis-grid {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 15px !important;
   }
 
-  .topbar-indices{
-    overflow-x:auto;
-    white-space:nowrap;
+  /* Specific override for any inline-styled grids */
+  [style*="grid-template-columns"] {
+    grid-template-columns: 1fr !important;
   }
 
-  /* PAGE HEADER */
-  .page-header{
-    flex-direction:column;
-    align-items:flex-start;
-    gap:10px;
+  /* CHART FIX: Give it enough height to be usable */
+  .chart-panel {
+    width: 100%;
+    padding: 15px;
   }
 
-  .page-header h1{
-    font-size:20px;
+  .area-chart-wrap {
+    height: 250px !important;
   }
 
-  /* GRID FIXES */
-  .mid-row,
-  .bottom-row{
-    display:flex;
-    flex-direction:column;
+  /* TABLE SCROLLING: Prevent the whole page from stretching */
+  .table-panel {
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
   }
 
-  .right-stack{
-    display:flex;
-    flex-direction:column;
+  table {
+    min-width: 600px; /* Allows horizontal swipe on the table only */
   }
 
-  /* CHART */
-  .chart-panel{
-    width:100%;
-    padding:14px;
+  /* ADJUST CARDS */
+  .stat-card, .portfolio-card {
+    width: 100% !important;
   }
-
-  .area-chart-wrap{
-    height:180px;
-  }
-
-  /* TABLE FIX */
-  .table-panel{
-    overflow-x:auto;
-  }
-
-  table{
-    min-width:600px;
-  }
-
-  /* WATCHLIST */
-  #watchlist-content table{
-    min-width:700px;
-  }
-
-  /* MARKET GRID */
-  [style*="repeat(3,1fr)"]{
-    grid-template-columns:1fr !important;
-  }
-
-  /* PORTFOLIO */
-  [style*="repeat(4,1fr)"]{
-    grid-template-columns:1fr 1fr !important;
-  }
-
-  /* ANALYSIS */
-  [style*="grid-template-columns:1fr 1fr"]{
-    grid-template-columns:1fr !important;
-  }
-
-  /* CALCULATOR */
-  .calc-two-col,
-  [style*="flex-direction:row"]{
-    flex-direction:column !important;
-  }
-
-  /* DONUT CHART */
-  canvas{
-    max-width:100%;
-    height:auto !important;
-  }
-
-  /* INPUTS */
-  input,
-  button{
-    max-width:100%;
-  }
-
-}
-
-/* EXTRA SMALL DEVICES */
-
-@media screen and (max-width:480px){
-
-  .chart-price{
-    font-size:22px;
-  }
-
-  .panel-title{
-    font-size:13px;
-  }
-
-  .topbar{
-    height:auto;
-    padding:10px;
-  }
-
-  .topbar-indices{
-    gap:14px;
-  }
-
-  .stock-name{
-    font-size:12px;
-  }
-
-  .news-headline{
-    font-size:11px;
-  }
-
 }
