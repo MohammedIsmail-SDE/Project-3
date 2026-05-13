@@ -232,153 +232,245 @@ nav.side-nav{flex:1;padding:16px 10px;}
    MOBILE RESPONSIVE — MarketEdge
    ══════════════════════════════════════ */
 
-/* Hamburger button — hidden on desktop */
+/* Hamburger — hidden on desktop */
+
+/* ═══════════════════════════════════════════════
+   MOBILE — Groww/Kotak Style Bottom Nav
+   ═══════════════════════════════════════════════ */
+
+/* Bottom nav bar — hidden on desktop */
+.bottom-nav {
+  display: none;
+}
+
+/* Hamburger — hidden by default */
 .hamburger {
   display: none;
   flex-direction: column;
   gap: 5px;
   cursor: pointer;
-  padding: 8px;
-  border-radius: 8px;
+  padding: 6px 8px;
   background: transparent;
   border: none;
-  z-index: 200;
+  flex-shrink: 0;
+  z-index: 10;
 }
 .hamburger span {
   display: block;
-  width: 22px;
+  width: 20px;
   height: 2px;
   background: var(--text);
   border-radius: 2px;
-  transition: all 0.3s;
+  transition: all 0.28s;
 }
-.hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
-.hamburger.open span:nth-child(2) { opacity: 0; }
-.hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+.hamburger.open span:nth-child(1){transform:translateY(7px) rotate(45deg);}
+.hamburger.open span:nth-child(2){opacity:0;}
+.hamburger.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg);}
 
-/* Sidebar overlay for mobile */
+/* Sidebar overlay */
 .sidebar-overlay {
   display: none;
   position: fixed;
   inset: 0;
-  background: rgba(0,0,0,0.6);
-  z-index: 99;
-  backdrop-filter: blur(2px);
+  background: rgba(0,0,0,0.65);
+  backdrop-filter: blur(3px);
+  z-index: 998;
 }
 .sidebar-overlay.visible { display: block; }
 
 @media (max-width: 768px) {
-  /* ── LAYOUT ── */
-  .app { flex-direction: column; height: 100vh; overflow: hidden; }
 
-  /* ── SIDEBAR — slide in from left ── */
+  /* ── LAYOUT ── */
+  html, body { overflow-x: hidden; }
+  .app { flex-direction: column; height: 100dvh; overflow: hidden; }
+  .main { flex: 1; min-height: 0; display: flex; flex-direction: column; overflow: hidden; }
+
+  /* ── SIDEBAR: Hidden — use bottom nav instead ── */
   .sidebar {
-    position: fixed;
+    position: fixed !important;
     top: 0; left: 0; bottom: 0;
-    width: 240px !important;
-    min-width: 240px !important;
+    width: 260px !important;
+    min-width: 260px !important;
     transform: translateX(-100%);
     transition: transform 0.3s ease;
-    z-index: 100;
-    box-shadow: 4px 0 24px rgba(0,0,0,0.5);
+    z-index: 999;
+    box-shadow: 6px 0 30px rgba(0,0,0,0.6);
   }
   .sidebar.mobile-open { transform: translateX(0); }
 
   /* ── TOPBAR ── */
   .topbar {
-    padding: 0 12px;
-    height: 52px;
-    gap: 8px;
+    position: relative !important;
+    height: 48px !important;
+    padding: 0 14px !important;
+    gap: 10px;
+    flex-shrink: 0;
+    border-bottom: 1px solid var(--border);
   }
-  .hamburger { display: flex; }
+  .hamburger { display: flex !important; }
+  .search-bar { display: none; }
   .topbar-indices {
-    gap: 0.8rem;
-    font-size: 11px;
     flex: 1;
+    gap: 1rem;
+    font-size: 11.5px;
     overflow-x: auto;
     white-space: nowrap;
     scrollbar-width: none;
   }
   .topbar-indices::-webkit-scrollbar { display: none; }
-  .index-item { flex-shrink: 0; }
   .index-name { display: none; }
-  .topbar-right { gap: 8px; }
+  .index-item { flex-shrink: 0; }
 
-  /* ── MAIN CONTENT ── */
-  .main { flex: 1; min-height: 0; }
-  #sections-wrap > div { padding: 1rem; gap: 1rem; }
+  /* ── SECTIONS ── */
+  #sections-wrap {
+    flex: 1;
+    min-height: 0;
+    overflow: hidden;
+    display: flex;
+  }
+  #sections-wrap > div {
+    padding: 1rem 0.9rem 1rem;
+    gap: 0.9rem;
+    /* Bottom padding for bottom nav */
+    padding-bottom: 70px !important;
+  }
 
   /* ── PAGE HEADER ── */
-  .page-header { flex-direction: column; gap: 8px; }
-  .page-header h1 { font-size: 18px; }
+  .page-header { flex-direction: column; gap: 6px; margin-bottom: 0.75rem; }
+  .page-header h1 { font-size: 20px; }
+  .btn-customize { font-size: 12px; padding: 6px 12px; align-self: flex-start; }
 
-  /* ── DASHBOARD GRIDS ── */
+  /* ── BOTTOM NAV BAR (Groww style) ── */
+  .bottom-nav {
+    display: flex !important;
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    height: 60px;
+    background: var(--bg2);
+    border-top: 1px solid var(--border);
+    z-index: 997;
+    align-items: stretch;
+  }
+  .bottom-nav-item {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+    cursor: pointer;
+    color: var(--muted);
+    font-size: 10px;
+    font-family: var(--font-body);
+    font-weight: 500;
+    border: none;
+    background: transparent;
+    padding: 0;
+    transition: color 0.2s;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .bottom-nav-item svg {
+    width: 22px;
+    height: 22px;
+    stroke: currentColor;
+  }
+  .bottom-nav-item.active {
+    color: var(--green);
+  }
+  .bottom-nav-item.active svg {
+    stroke: var(--green);
+  }
+
+  /* ── MORE BUTTON opens sidebar ── */
+  .bottom-nav-more {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+    cursor: pointer;
+    color: var(--muted);
+    font-size: 10px;
+    font-weight: 500;
+    border: none;
+    background: transparent;
+    padding: 0;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .bottom-nav-more svg { width: 22px; height: 22px; stroke: currentColor; }
+
+  /* ── DASHBOARD GRID ── */
   .mid-row { grid-template-columns: 1fr !important; }
   .bottom-row { grid-template-columns: 1fr !important; }
+  .right-stack { flex-direction: column !important; gap: 0.9rem; }
+  .area-chart-wrap { height: 200px !important; }
+
+  /* ── ALL INLINE GRIDS → single col ── */
+  [style*="grid-template-columns:1fr 1fr 1fr 1fr"] { grid-template-columns: 1fr 1fr !important; }
+  [style*="grid-template-columns:1fr 1fr 1fr"] { grid-template-columns: 1fr 1fr !important; }
+  [style*="grid-template-columns:1fr 1fr"] { grid-template-columns: 1fr !important; }
+  [style*="grid-template-columns:minmax"] { flex-direction: column !important; }
+
+  /* ── TABLES: scrollable ── */
+  .chart-panel { overflow: hidden; }
+  .table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; width: 100%; }
+  table { min-width: 480px; }
+  table th:nth-child(n+5), table td:nth-child(n+5) { display: none; }
+
+  /* ── CALCULATOR ── */
+  #calculator-content [style*="display:flex;flex-direction:row"],
+  #calculator-content [style*="flex-direction: row"] { flex-direction: column !important; }
+  #calc-donut { width: 140px !important; height: 140px !important; }
 
   /* ── CHART PANEL ── */
   .chart-panel { padding: 14px; }
-  .area-chart-wrap { height: 180px !important; }
 
-  /* ── MARKET OVERVIEW (right panel) ── */
-  .right-stack { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; }
-
-  /* ── STOCK TABLES ── */
-  .stock-table th:nth-child(n+4),
-  .stock-table td:nth-child(n+4) { display: none; }
-
-  /* ── INDICES GRID (markets page) ── */
-  [style*="grid-template-columns:repeat(3"] {
-    grid-template-columns: 1fr 1fr !important;
-  }
-  [style*="grid-template-columns:1fr 1fr 1fr"] {
-    grid-template-columns: 1fr 1fr !important;
-  }
-
-  /* ── CALCULATOR ── */
-  [style*="grid-template-columns:minmax(0,1fr) minmax(0,1fr)"],
-  .calc-two-col {
-    flex-direction: column !important;
-  }
-
-  /* ── PORTFOLIO CARDS ── */
-  [style*="grid-template-columns:1fr 1fr 1fr 1fr"] {
-    grid-template-columns: 1fr 1fr !important;
-  }
-
-  /* ── ANALYSIS GRID ── */
-  [style*="grid-template-columns:1fr 1fr;gap:1rem"] {
-    grid-template-columns: 1fr !important;
-  }
-
-  /* ── SETTINGS ── */
-  [style*="grid-template-columns:1fr 1fr;gap:1rem;max-width:700px"] {
-    grid-template-columns: 1fr !important;
-    max-width: 100% !important;
-  }
-
-  /* ── WATCHLIST TABLE ── */
-  .watchlist-table th:nth-child(n+5),
-  .watchlist-table td:nth-child(n+5) { display: none; }
-
-  /* ── REPORTS ── */
-  [style*="grid-template-columns:1fr 1fr"] {
-    grid-template-columns: 1fr !important;
-  }
-
-  /* ── NEWS CARDS ── */
-  .news-filters { flex-wrap: wrap; gap: 6px; }
-
-  /* ── FONT SIZES ── */
-  .stat-value { font-size: 20px !important; }
-  .panel-title { font-size: 13px; }
+  /* ── MARKET INDEX CARDS ── */
+  .market-index-grid { grid-template-columns: 1fr 1fr !important; }
 }
 
 @media (max-width: 400px) {
-  .topbar-indices { gap: 0.5rem; }
-  #sections-wrap > div { padding: 0.75rem; }
-  .chart-panel { padding: 10px; }
+  .topbar { height: 44px !important; }
+  #sections-wrap > div { padding: 0.75rem 0.7rem 70px !important; }
+  .page-header h1 { font-size: 17px; }
+  .bottom-nav { height: 56px; }
 }
+
+/* ── MORE MENU POPUP ── */
+.more-menu-overlay{display:none;position:fixed;inset:0;z-index:1000;background:rgba(0,0,0,0.5);}
+.more-menu-overlay.open{display:block;}
+.more-menu{
+  display:none;position:fixed;bottom:60px;left:0;right:0;
+  background:var(--bg2);border-radius:20px 20px 0 0;
+  border-top:1px solid var(--border);
+  padding:20px 16px 24px;z-index:1001;
+  transform:translateY(100%);transition:transform 0.3s ease;
+}
+.more-menu.open{display:block;transform:translateY(0);}
+.more-menu-header{
+  display:flex;justify-content:space-between;align-items:center;
+  margin-bottom:20px;font-family:var(--font-head);font-weight:600;font-size:16px;
+}
+.more-menu-grid{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:12px;
+}
+.more-menu-item{
+  display:flex;flex-direction:column;align-items:center;gap:8px;
+  background:var(--bg3);border:1px solid var(--border);
+  border-radius:14px;padding:16px 8px;cursor:pointer;
+  color:var(--text);font-size:12px;font-weight:500;
+  font-family:var(--font-body);transition:all 0.2s;
+  -webkit-tap-highlight-color:transparent;
+}
+.more-menu-item:active{background:var(--green-glow);border-color:var(--green);}
+.more-menu-icon{
+  width:40px;height:40px;border-radius:12px;
+  background:rgba(0,230,118,0.1);
+  display:flex;align-items:center;justify-content:center;
+}
+.more-menu-icon svg{width:20px;height:20px;stroke:var(--green);}
+
 </style>
 </head>
 <body>
@@ -442,7 +534,6 @@ nav.side-nav{flex:1;padding:16px 10px;}
 <div class="main">
 
   <!-- TOP BAR -->
-   <button class="menu-btn" onclick="toggleSidebar()">☰</button>
   <div class="topbar"><button class="hamburger" id="hamburger" onclick="toggleSidebar()" aria-label="Menu"><span></span><span></span><span></span></button>
     <div class="topbar-indices">
       <div class="idx">
@@ -596,7 +687,7 @@ nav.side-nav{flex:1;padding:16px 10px;}
           <span class="panel-title">Top Gainers</span>
           <a class="view-all" href="#">View All</a>
         </div>
-        <table>
+        <div class="table-wrap"><table>
           <tr>
             <th>Stock</th><th>Price</th><th>Change</th><th>% Change</th>
           </tr>
@@ -620,7 +711,7 @@ nav.side-nav{flex:1;padding:16px 10px;}
             <td><div class="stock-cell"><div class="stock-avatar" style="background:rgba(0,230,118,0.15);color:#00e676;">I</div><div><div class="stock-name">INFY</div><div class="stock-sub">Infosys</div></div></div></td>
             <td>₹1,895.60</td><td class="td-green">+24.10</td><td class="td-green">+1.29%</td>
           </tr>
-        </tbody></table>
+        </tbody></table></div>
       </div>
 
       <!-- Top Losers -->
@@ -629,7 +720,7 @@ nav.side-nav{flex:1;padding:16px 10px;}
           <span class="panel-title">Top Losers</span>
           <a class="view-all" style="color:var(--red);" href="#">View All</a>
         </div>
-        <table>
+        <div class="table-wrap"><table>
           <tr>
             <th>Stock</th><th>Price</th><th>Change</th><th>% Change</th>
           </tr>
@@ -653,7 +744,7 @@ nav.side-nav{flex:1;padding:16px 10px;}
             <td><div class="stock-cell"><div class="stock-avatar" style="background:rgba(103,58,183,0.15);color:#673AB7;">B</div><div><div class="stock-name">BAJFINANCE</div><div class="stock-sub">Bajaj Finance</div></div></div></td>
             <td>₹7,876.90</td><td class="td-red">-32.10</td><td class="td-red">-0.41%</td>
           </tr>
-        </tbody></table>
+        </tbody></table></div>
       </div>
 
       <!-- Right stack: News + Events -->
@@ -843,7 +934,7 @@ nav.side-nav{flex:1;padding:16px 10px;}
         <span class="panel-title">My Watchlist</span>
         <input placeholder="Search stocks…" style="background:var(--bg3);border:0.5px solid var(--border);border-radius:7px;padding:6px 12px;color:var(--text);font-size:13px;font-family:var(--font-body);outline:none;min-width:200px;">
       </div>
-      <table style="width:100%;border-collapse:collapse;margin-top:10px;">
+      <div class="table-wrap"><table style="width:100%;border-collapse:collapse;margin-top:10px;">
         <thead><tr style="border-bottom:0.5px solid var(--border);">
           <th style="text-align:left;padding:10px 8px;font-size:11px;color:var(--muted);font-weight:500;letter-spacing:.06em;">STOCK</th>
           <th style="text-align:right;padding:10px 8px;font-size:11px;color:var(--muted);font-weight:500;letter-spacing:.06em;">PRICE</th>
@@ -854,7 +945,7 @@ nav.side-nav{flex:1;padding:16px 10px;}
           <th style="text-align:right;padding:10px 8px;font-size:11px;color:var(--muted);font-weight:500;letter-spacing:.06em;">MKT CAP</th>
         </tr></thead>
         <tbody id="watchlist-body"></tbody>
-      </table>
+      </table></div>
     </div>
   </div>
 
@@ -931,7 +1022,7 @@ nav.side-nav{flex:1;padding:16px 10px;}
     </div>
     <div class="chart-panel" style="padding:20px;">
       <div class="panel-header"><span class="panel-title">Top Movers by Volume</span></div>
-      <table style="width:100%;border-collapse:collapse;margin-top:10px;">
+      <div class="table-wrap"><table style="width:100%;border-collapse:collapse;margin-top:10px;">
         <thead><tr style="border-bottom:0.5px solid var(--border);">
           <th style="text-align:left;padding:8px;font-size:11px;color:var(--muted);font-weight:500;">STOCK</th>
           <th style="text-align:right;padding:8px;font-size:11px;color:var(--muted);font-weight:500;">PRICE</th>
@@ -943,7 +1034,7 @@ nav.side-nav{flex:1;padding:16px 10px;}
           <tr style="border-bottom:0.5px solid var(--border);"><td style="padding:10px 8px;"><div style="font-weight:600;font-size:13px;">TCS</div><div style="font-size:11px;color:var(--muted);">Tata Consultancy</div></td><td style="text-align:right;padding:10px 8px;font-weight:600;">₹2,394.40</td><td style="text-align:right;padding:10px 8px;color:var(--muted);font-size:13px;">2.8Cr</td><td style="text-align:right;padding:10px 8px;"><span style="background:rgba(239,68,68,0.1);color:var(--red);padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600;">SELL</span></td></tr>
           <tr><td style="padding:10px 8px;"><div style="font-weight:600;font-size:13px;">HDFC BANK</div><div style="font-size:11px;color:var(--muted);">HDFC Bank Ltd</div></td><td style="text-align:right;padding:10px 8px;font-weight:600;">₹780.85</td><td style="text-align:right;padding:10px 8px;color:var(--muted);font-size:13px;">3.5Cr</td><td style="text-align:right;padding:10px 8px;"><span style="background:rgba(251,191,36,0.1);color:#fbbf24;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600;">HOLD</span></td></tr>
         </tbody>
-      </table>
+      </table></div>
     </div>
   </div>
 
@@ -970,7 +1061,7 @@ nav.side-nav{flex:1;padding:16px 10px;}
     </div>
     <div class="chart-panel">
       <div class="panel-header"><span class="panel-title">Holdings</span></div>
-      <table style="width:100%;border-collapse:collapse;margin-top:10px;">
+      <div class="table-wrap"><table style="width:100%;border-collapse:collapse;margin-top:10px;">
         <thead><tr style="border-bottom:0.5px solid var(--border);">
           <th style="text-align:left;padding:10px 8px;font-size:11px;color:var(--muted);font-weight:500;letter-spacing:.06em;">STOCK</th>
           <th style="text-align:right;padding:10px 8px;font-size:11px;color:var(--muted);font-weight:500;">QTY</th>
@@ -986,7 +1077,7 @@ nav.side-nav{flex:1;padding:16px 10px;}
           <tr style="border-bottom:0.5px solid var(--border);"><td style="padding:11px 8px;"><div style="font-weight:600;font-size:13px;">HDFCBANK</div><div style="font-size:11px;color:var(--muted);">HDFC Bank Ltd</div></td><td style="text-align:right;padding:11px 8px;color:var(--text);">100</td><td style="text-align:right;padding:11px 8px;color:var(--text);">₹820</td><td style="text-align:right;padding:11px 8px;font-weight:600;">₹780</td><td style="text-align:right;padding:11px 8px;font-weight:600;">₹78,000</td><td style="text-align:right;padding:11px 8px;color:var(--red);font-weight:600;">-₹4,000</td><td style="text-align:right;padding:11px 8px;color:var(--red);">-4.88%</td></tr>
           <tr><td style="padding:11px 8px;"><div style="font-weight:600;font-size:13px;">TITAN</div><div style="font-size:11px;color:var(--muted);">Titan Company</div></td><td style="text-align:right;padding:11px 8px;color:var(--text);">20</td><td style="text-align:right;padding:11px 8px;color:var(--text);">₹3,980</td><td style="text-align:right;padding:11px 8px;font-weight:600;">₹4,509</td><td style="text-align:right;padding:11px 8px;font-weight:600;">₹90,180</td><td style="text-align:right;padding:11px 8px;color:var(--green);font-weight:600;">+₹10,580</td><td style="text-align:right;padding:11px 8px;color:var(--green);">+13.29%</td></tr>
         </tbody>
-      </table>
+      </table></div>
     </div>
   </div>
 
@@ -1344,12 +1435,8 @@ function showSection(section, clickedEl, event) {
   ALL_SECTIONS.forEach(id => {
     const el = document.getElementById(id + '-content');
     if (!el) return;
-    if (id === section) {
-      el.style.display = 'flex';
-      el.style.flexDirection = 'column';
-    } else {
-      el.style.display = 'none';
-    }
+    el.removeAttribute('style');
+    el.classList.toggle('active-section', id === section);
   });
 
   if (section === 'calculator') initCalcCharts();
@@ -1660,29 +1747,137 @@ function _initCalcCharts() {
   calcRun();
 }
 
+
 // ── MOBILE SIDEBAR ──
 function toggleSidebar() {
-  const sidebar = document.querySelector('.sidebar');
-  const overlay = document.getElementById('sidebar-overlay');
+  document.querySelector('.sidebar').classList.toggle('mobile-open');
+  document.getElementById('sidebar-overlay').classList.toggle('visible');
   const btn = document.getElementById('hamburger');
-  sidebar.classList.toggle('mobile-open');
-  overlay.classList.toggle('visible');
-  btn.classList.toggle('open');
+  if (btn) btn.classList.toggle('open');
 }
 function closeSidebar() {
-  const sidebar = document.querySelector('.sidebar');
-  const overlay = document.getElementById('sidebar-overlay');
+  document.querySelector('.sidebar').classList.remove('mobile-open');
+  document.getElementById('sidebar-overlay').classList.remove('visible');
   const btn = document.getElementById('hamburger');
-  sidebar.classList.remove('mobile-open');
-  overlay.classList.remove('visible');
-  btn.classList.remove('open');
+  if (btn) btn.classList.remove('open');
 }
-// Close sidebar when a nav item is clicked on mobile
+
+// ── BOTTOM NAV (mobile) ──
+function showSectionMobile(section, el) {
+  // Update bottom nav active state
+  document.querySelectorAll('.bottom-nav-item').forEach(b => b.classList.remove('active'));
+  if (el) el.classList.add('active');
+  // Also update sidebar nav
+  document.querySelectorAll('.nav-item').forEach(x => x.classList.remove('active'));
+  const sideItem = document.querySelector('[data-section="' + section + '"]');
+  if (sideItem) sideItem.classList.add('active');
+  // Show section
+  ALL_SECTIONS.forEach(id => {
+    const e = document.getElementById(id + '-content');
+    if (!e) return;
+    e.removeAttribute('style');
+    e.classList.toggle('active-section', id === section);
+  });
+  // Init section
+  if (section === 'calculator') initCalcCharts();
+  if (section === 'watchlist') initWatchlist();
+  if (section === 'markets') initSectors();
+  if (section === 'news') initNews();
+  if (section === 'reports') initReports();
+  closeSidebar();
+}
+
+// Close sidebar when nav item clicked on mobile
 document.querySelectorAll('.nav-item').forEach(item => {
   item.addEventListener('click', () => {
-    if (window.innerWidth <= 768) closeSidebar();
+    if (window.innerWidth <= 768) {
+      closeSidebar();
+      // Sync bottom nav active state
+      const section = item.getAttribute('data-section');
+      document.querySelectorAll('.bottom-nav-item').forEach(b => b.classList.remove('active'));
+      const bnItem = document.getElementById('bn-' + section);
+      if (bnItem) bnItem.classList.add('active');
+    }
   });
 });
+
+// ── MORE MENU ──
+function toggleMoreMenu() {
+  const menu = document.getElementById('more-menu');
+  const overlay = document.getElementById('more-overlay');
+  const isOpen = menu.classList.contains('open');
+  if (isOpen) {
+    closeMoreMenu();
+  } else {
+    menu.classList.add('open');
+    overlay.classList.add('open');
+  }
+}
+function closeMoreMenu() {
+  document.getElementById('more-menu').classList.remove('open');
+  document.getElementById('more-overlay').classList.remove('open');
+}
+
 </script>
+
+<!-- ── BOTTOM NAV (Mobile Groww-style) ── -->
+<nav class="bottom-nav" id="bottom-nav">
+  <button class="bottom-nav-item active" id="bn-dashboard" onclick="showSectionMobile('dashboard',this)">
+    <svg viewBox="0 0 20 20" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="7" height="7" rx="1.5"/><rect x="11" y="2" width="7" height="7" rx="1.5"/><rect x="2" y="11" width="7" height="7" rx="1.5"/><rect x="11" y="11" width="7" height="7" rx="1.5"/></svg>
+    Home
+  </button>
+  <button class="bottom-nav-item" id="bn-watchlist" onclick="showSectionMobile('watchlist',this)">
+    <svg viewBox="0 0 20 20" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2 10h16M2 5h16M2 15h10"/></svg>
+    Watchlist
+  </button>
+  <button class="bottom-nav-item" id="bn-markets" onclick="showSectionMobile('markets',this)">
+    <svg viewBox="0 0 20 20" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="2,16 6,9 10,12 14,5 18,7"/></svg>
+    Markets
+  </button>
+  <button class="bottom-nav-item" id="bn-portfolio" onclick="showSectionMobile('portfolio',this)">
+    <svg viewBox="0 0 20 20" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="16" height="11" rx="2"/><path d="M7 7V5a3 3 0 016 0v2"/></svg>
+    Portfolio
+  </button>
+  <button class="bottom-nav-more" id="bn-more" onclick="toggleMoreMenu()">
+    <svg viewBox="0 0 20 20" fill="none" stroke-width="1.5" stroke-linecap="round"><circle cx="4" cy="10" r="1.5"/><circle cx="10" cy="10" r="1.5"/><circle cx="16" cy="10" r="1.5"/></svg>
+    More
+  </button>
+</nav>
+
+<!-- ── MORE MENU POPUP ── -->
+<div class="more-menu-overlay" id="more-overlay" onclick="closeMoreMenu()"></div>
+<div class="more-menu" id="more-menu">
+  <div class="more-menu-header">
+    <span>More</span>
+    <button onclick="closeMoreMenu()" style="background:none;border:none;color:var(--muted);font-size:20px;cursor:pointer;line-height:1;">✕</button>
+  </div>
+  <div class="more-menu-grid">
+    <button class="more-menu-item" onclick="showSectionMobile('analysis',null);closeMoreMenu()">
+      <div class="more-menu-icon"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M10 2v4M10 14v4M2 10h4M14 10h4"/><circle cx="10" cy="10" r="3"/></svg></div>
+      <span>Analysis</span>
+    </button>
+    <button class="more-menu-item" onclick="showSectionMobile('news',null);closeMoreMenu()">
+      <div class="more-menu-icon"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><rect x="3" y="4" width="14" height="13" rx="2"/><line x1="3" y1="8" x2="17" y2="8"/><line x1="7" y1="12" x2="13" y2="12"/></svg></div>
+      <span>News</span>
+    </button>
+    <button class="more-menu-item" onclick="showSectionMobile('alerts',null);closeMoreMenu()">
+      <div class="more-menu-icon"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M10 2a6 6 0 016 6c0 4-6 10-6 10S4 12 4 8a6 6 0 016-6z"/><circle cx="10" cy="8" r="2"/></svg></div>
+      <span>Alerts</span>
+    </button>
+    <button class="more-menu-item" onclick="showSectionMobile('calculator',null);closeMoreMenu()">
+      <div class="more-menu-icon"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><rect x="2" y="2" width="16" height="16" rx="2"/><line x1="6" y1="7" x2="10" y2="7"/><line x1="6" y1="10" x2="14" y2="10"/><line x1="6" y1="13" x2="14" y2="13"/></svg></div>
+      <span>Calculator</span>
+    </button>
+    <button class="more-menu-item" onclick="showSectionMobile('reports',null);closeMoreMenu()">
+      <div class="more-menu-icon"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M3 10l7-7 7 7"/><path d="M5 8v8h4v-4h2v4h4V8"/></svg></div>
+      <span>Reports</span>
+    </button>
+    <button class="more-menu-item" onclick="showSectionMobile('settings',null);closeMoreMenu()">
+      <div class="more-menu-icon"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><circle cx="10" cy="10" r="2"/><path d="M10 2v2M10 16v2M2 10h2M16 10h2M4.22 4.22l1.42 1.42M14.36 14.36l1.42 1.42M4.22 15.78l1.42-1.42M14.36 5.64l1.42-1.42"/></svg></div>
+      <span>Settings</span>
+    </button>
+  </div>
+</div>
+
 </body>
 </html>
