@@ -12,7 +12,7 @@
 
 **A real-time stock market dashboard with live NSE/BSE/NASDAQ data, interactive charts, SIP calculator, watchlist, portfolio tracker and more.**
 
-### 🔗 [project-3-8i3c.vercel.app](https://project-3-8i3c.vercel.app/)
+### 🔗 [project-3-8i3c.vercel.app](https://project-3-xny2.vercel.app/)
 
 </div>
 
